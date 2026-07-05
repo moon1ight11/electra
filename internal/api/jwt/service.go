@@ -25,12 +25,12 @@ func NewJWTService(secret string, expiration time.Duration) TokenService {
 func (c *Claims) CustomFieldsValidate() error {
 	// проверяем валидность uuid
 	if c.UserId == nil {
-		return fmt.Errorf("user id is empty")
+		return fmt.Errorf("error in customFieldsValidate: user id is empty")
 	}
 
 	// проверяем, что имя пользователя не пустое
 	if c.UserName == "" {
-		return fmt.Errorf("invalid user name")
+		return fmt.Errorf("error in customFieldsValidate: invalid user name")
 	}
 
 	// проверяем валидность номера телефона
@@ -38,7 +38,7 @@ func (c *Claims) CustomFieldsValidate() error {
 
 	cleaned := nonDigits.ReplaceAllString(c.UserPhone, "")
 	if len(cleaned) == 0 {
-		return fmt.Errorf("phone must contain at least one digit")
+		return fmt.Errorf("error in customFieldsValidate: phone must contain at least one digit")
 	}
 
 	return nil
@@ -69,7 +69,7 @@ func (j *Service) GenerateToken(userID uuid.UUID, userName string, userPhone str
 func (j *Service) ParseToken(tokenString string, claims *Claims) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		if token.Method != jwt.SigningMethodHS256 {
-			return nil, fmt.Errorf("Error in GenerateToken: invalid method")
+			return nil, fmt.Errorf("Error in Parse token: invalid method")
 		}
 		return j.secret, nil
 	})

@@ -16,8 +16,7 @@ func (r *RequestRepo) Create(ctx context.Context, req *domain.Request) error {
 		 	VALUES ($1, $2, $3)
 		 	RETURNING id, status, created_at`
 
-	err := r.db.DB.QueryRowContext(ctx, query, req.Name, req.Phone, req.Comment).
-		Scan(&req.ID, &req.Status, &req.CreatedAt)
+	err := r.db.DB.QueryRowContext(ctx, query, req.Name, req.Phone, req.Comment).Scan(&req.ID, &req.Status, &req.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("error in create request: %w", err)
 	}
@@ -33,8 +32,7 @@ func (r *RequestRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.Reques
 		 	FROM requests
 		 	WHERE id = $1`
 
-	err := r.db.DB.QueryRowContext(ctx, query, id).
-		Scan(&req.ID, &req.Name, &req.Phone, &req.Comment, &req.Status, &req.CreatedAt)
+	err := r.db.DB.QueryRowContext(ctx, query, id).Scan(&req.ID, &req.Name, &req.Phone, &req.Comment, &req.Status, &req.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -68,7 +66,7 @@ func (r *RequestRepo) List(ctx context.Context) ([]domain.Request, error) {
 	return requests, rows.Err()
 }
 
-// только новые заявки (для владельца — входящие)
+// только новые заявки
 func (r *RequestRepo) ListNew(ctx context.Context) ([]domain.Request, error) {
 	query := `
 			SELECT id, name, phone, comment, status, created_at
@@ -104,10 +102,12 @@ func (r *RequestRepo) MarkConverted(ctx context.Context, id uuid.UUID) error {
 	if err != nil {
 		return fmt.Errorf("error in mark request converted: %w", err)
 	}
+
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
 		return fmt.Errorf("request %s not found or not in 'new' status", id.String())
 	}
+
 	return nil
 }
 
@@ -122,9 +122,11 @@ func (r *RequestRepo) MarkCancelled(ctx context.Context, id uuid.UUID) error {
 	if err != nil {
 		return fmt.Errorf("error in mark request cancelled: %w", err)
 	}
+
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
 		return fmt.Errorf("request %s not found or not in 'new' status", id.String())
 	}
+	
 	return nil
 }

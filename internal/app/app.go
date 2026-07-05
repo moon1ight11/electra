@@ -45,21 +45,21 @@ func New(cfg config.Config) *App {
 }
 
 func (a *App) Init() error {
-	// Логгер
+	// логгер
 	logger, err := logger.NewLogger(a.cfg)
 	if err != nil {
 		log.Fatalf("Failed to init logger: %v", err)
 	}
 	a.logger = logger
 
-	// База данных
+	// бд
 	db, err := database.PostgresConnection(a.cfg)
 	if err != nil {
 		return fmt.Errorf("db connection: %w", err)
 	}
 	a.db = db
 
-	// Миграции
+	// миграции
 	if err := a.db.UpMigrations(); err != nil {
 		return fmt.Errorf("migrations: %w", err)
 	}
@@ -71,29 +71,29 @@ func (a *App) Init() error {
 		time.Duration(a.cfg.JWT.Expiration)*time.Hour,
 	)
 
-	// Репозитории
+	// репо-слой
 	requestRepo := requests.NewRequestRepo(a.db)
 	workerRepo := workers.NewWorkerRepo(a.db)
 	orderRepo := orders.NewOrderRepo(a.db)
 	orderWorkerRepo := orderworkers.NewOrderWorkerRepo(a.db)
 	statisticsRepo := statistic.NewStatisticsRepo(a.db)
 
-	// Сервисы
+	// сервисный слой
 	authService := authservice.NewAuthService(workerRepo, jwtService)
 	requestService := requestservice.NewRequestService(requestRepo, orderRepo)
 	orderService := orderservice.NewOrderService(orderRepo, orderWorkerRepo)
 	orderWorkerService := orderworkerservice.NewOrderWorkerService(orderWorkerRepo)
 	statisticsService := statisticservice.NewStatisticsService(statisticsRepo)
 
-	// Хендлеры
-	authHandler := authhandlers.NewAuthHandler(authService)
-	requestHandler := requesthandlers.NewRequestHandler(requestService)
-	orderHandler := orderhandlers.NewOrderHandler(orderService)
-	orderWorkerHandler := orderworkerhandlers.NewOrderWorkerHandler(orderWorkerService)
-	statisticsHandler := statisticshandlers.NewStatisticsHandler(statisticsService)
-	workerHandler := workerhandlers.NewWorkerHandler(authService)
+	// слой хэндлеров
+	authHandler := authhandlers.NewAuthHandler(authService, a.logger)
+	requestHandler := requesthandlers.NewRequestHandler(requestService, a.logger)
+	orderHandler := orderhandlers.NewOrderHandler(orderService, a.logger)
+	orderWorkerHandler := orderworkerhandlers.NewOrderWorkerHandler(orderWorkerService, a.logger)
+	statisticsHandler := statisticshandlers.NewStatisticsHandler(statisticsService, a.logger)
+	workerHandler := workerhandlers.NewWorkerHandler(authService, a.logger)
 
-	// Роутер
+	// роутер
 	a.router = api.NewRouter(
 		authHandler,
 		requestHandler,
@@ -111,7 +111,7 @@ func (a *App) Run() error {
 	addr := fmt.Sprintf("%s:%s", a.cfg.Server.Host, a.cfg.Server.Port)
 	a.logger.Info("starting server", slog.String("addr", addr))
 
-	// Graceful shutdown
+	// ГШ
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 

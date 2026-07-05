@@ -16,6 +16,7 @@ func (r *OrderWorkerRepo) GetByOrder(ctx context.Context, orderID uuid.UUID) ([]
 		 	FROM order_workers
 		 	WHERE order_id = $1
 			`
+
 	rows, err := r.db.DB.QueryContext(ctx, query, orderID)
 	if err != nil {
 		return nil, fmt.Errorf("error in get order workers: %w", err)
@@ -36,6 +37,7 @@ func (r *OrderWorkerRepo) GetByOrder(ctx context.Context, orderID uuid.UUID) ([]
 		}
 		ows = append(ows, ow)
 	}
+
 	return ows, rows.Err()
 }
 
@@ -83,6 +85,7 @@ func (r *OrderWorkerRepo) Remove(ctx context.Context, orderID, workerID uuid.UUI
 			DELETE 
 			FROM order_workers 
 			WHERE order_id = $1 AND worker_id = $2`
+
 	_, err := r.db.DB.ExecContext(ctx, query, orderID, workerID)
 	if err != nil {
 		return fmt.Errorf("error in remove order worker: %w", err)
@@ -100,7 +103,7 @@ func (r *OrderWorkerRepo) ListCompletedByWorker(ctx context.Context, workerID uu
 		 	WHERE ow.worker_id = $1 AND o.completed_at IS NOT NULL
 		 	ORDER BY o.completed_at DESC
 			`
-	
+
 	rows, err := r.db.DB.QueryContext(ctx, query, workerID)
 	if err != nil {
 		return nil, fmt.Errorf("error in list completed orders: %w", err)
@@ -110,14 +113,14 @@ func (r *OrderWorkerRepo) ListCompletedByWorker(ctx context.Context, workerID uu
 	orders := make([]domain.Order, 0)
 	for rows.Next() {
 		var o domain.Order
-		if err := rows.Scan(&o.ID, 
-			&o.RequestID, 
-			&o.Address, 
-			&o.Description, 
+		if err := rows.Scan(&o.ID,
+			&o.RequestID,
+			&o.Address,
+			&o.Description,
 			&o.EstimatedPrice,
-			&o.PlannedDate, 
-			&o.CreatedBy, 
-			&o.CreatedAt, 
+			&o.PlannedDate,
+			&o.CreatedBy,
+			&o.CreatedAt,
 			&o.CompletedAt); err != nil {
 			return nil, fmt.Errorf("error in scan order: %w", err)
 		}
@@ -126,7 +129,7 @@ func (r *OrderWorkerRepo) ListCompletedByWorker(ctx context.Context, workerID uu
 	return orders, rows.Err()
 }
 
-// все выполненные заказы (только для владельца)
+// все выполненные заказы
 func (r *OrderWorkerRepo) ListAllCompleted(ctx context.Context) ([]domain.Order, error) {
 	query := `
 			SELECT id, request_id, address, description, estimated_price,
@@ -144,14 +147,14 @@ func (r *OrderWorkerRepo) ListAllCompleted(ctx context.Context) ([]domain.Order,
 	orders := make([]domain.Order, 0)
 	for rows.Next() {
 		var o domain.Order
-		if err := rows.Scan(&o.ID, 
-			&o.RequestID, 
-			&o.Address, 
-			&o.Description, 
+		if err := rows.Scan(&o.ID,
+			&o.RequestID,
+			&o.Address,
+			&o.Description,
 			&o.EstimatedPrice,
-			&o.PlannedDate, 
-			&o.CreatedBy, 
-			&o.CreatedAt, 
+			&o.PlannedDate,
+			&o.CreatedBy,
+			&o.CreatedAt,
 			&o.CompletedAt); err != nil {
 			return nil, fmt.Errorf("error in scan order: %w", err)
 		}

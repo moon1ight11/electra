@@ -1,0 +1,697 @@
+openapi: 3.0.3
+info:
+  title: Electra API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+
+tags:
+  - name: auth
+    description: Аутентификация
+  - name: requests
+    description: Заявки от клиентов
+  - name: orders
+    description: Заказы
+  - name: reports
+    description: Отчёты исполнителей
+  - name: statistics
+    description: Статистика для владельца
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: cookie
+
+  schemas:
+
+    # --- Auth ---
+    LoginRequest:
+      type: object
+      required: [phone, password]
+      properties:
+        phone:
+          type: string
+          example: "79001234567"
+        password:
+          type: string
+          example: "owner123"
+
+    CreateWorkerRequest:
+      type: object
+      required: [name, phone, password]
+      properties:
+        name:
+          type: string
+          example: "Новый Электрик"
+        phone:
+          type: string
+          example: "79161112233"
+        password:
+          type: string
+          example: "securepass"
+
+    # --- Requests ---
+    CreateRequestInput:
+      type: object
+      required: [name, phone]
+      properties:
+        name:
+          type: string
+          example: "Иван Петров"
+        phone:
+          type: string
+          example: "79161234567"
+        comment:
+          type: string
+          example: "Нужно подключить дом"
+
+    Request:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        phone:
+          type: string
+        comment:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [new, converted, cancelled]
+        created_at:
+          type: string
+          format: date-time
+
+    # --- Orders ---
+    CreateOrderFromRequestInput:
+      type: object
+      required: [request_id, address, worker_ids]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        address:
+          type: string
+          example: "ул. Ленина, д. 5"
+        description:
+          type: string
+          example: "Подключение дома 220В"
+        estimated_price:
+          type: number
+          example: 20000
+        planned_date:
+          type: string
+          format: date
+          example: "2026-07-10"
+        worker_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    CreateOrderDirectInput:
+      type: object
+      required: [address, worker_ids]
+      properties:
+        address:
+          type: string
+          example: "ул. Пушкина, д. 10"
+        description:
+          type: string
+          example: "Замена щитка"
+        estimated_price:
+          type: number
+          example: 15000
+        planned_date:
+          type: string
+          format: date
+          example: "2026-07-12"
+        worker_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        request_id:
+          type: string
+          format: uuid
+          nullable: true
+        address:
+          type: string
+        description:
+          type: string
+          nullable: true
+        estimated_price:
+          type: number
+          nullable: true
+        planned_date:
+          type: string
+          format: date
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    # --- Reports ---
+    UpdateReportInput:
+      type: object
+      required: [order_id]
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        time_spent:
+          type: integer
+          description: Затраченное время в минутах
+          example: 180
+        earned_amount:
+          type: number
+          example: 10000
+        materials_used:
+          type: string
+          example: "Кабель ВВГ 3х2.5 - 30м"
+        notes:
+          type: string
+          example: "Всё сделано"
+
+    OrderWorker:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        worker_id:
+          type: string
+          format: uuid
+        time_spent:
+          type: integer
+          nullable: true
+        earned_amount:
+          type: number
+          nullable: true
+        materials_used:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    # --- Statistics ---
+    WorkerStats:
+      type: object
+      properties:
+        worker_id:
+          type: string
+          format: uuid
+        worker_name:
+          type: string
+        orders_count:
+          type: integer
+        total_earned:
+          type: number
+        total_time_spent:
+          type: integer
+
+    # --- Worker ---
+    Worker:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        role:
+          type: string
+          enum: [owner, worker]
+        created_at:
+          type: string
+          format: date-time
+
+    # --- Common ---
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+
+paths:
+  # ==================== AUTH ====================
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Вход по телефону и паролю
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешный вход
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: cookie=...
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Неверный телефон или пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==================== WORKER ====================
+
+  /worker/logout:
+    post:
+      tags: [auth]
+      summary: Выход
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Успешный выход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /worker/orders/planned:
+    get:
+      tags: [orders]
+      summary: Запланированные заказы текущего исполнителя
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /worker/orders/history:
+    get:
+      tags: [orders]
+      summary: История выполненных заказов текущего исполнителя
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список выполненных заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /worker/orders/{id}/reports:
+    get:
+      tags: [reports]
+      summary: Отчёты всех исполнителей по заказу
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Список отчётов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderWorker'
+        '403':
+          description: Исполнитель не назначен на этот заказ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /worker/orders/report:
+    patch:
+      tags: [reports]
+      summary: Заполнить или обновить отчёт по заказу
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReportInput'
+      responses:
+        '200':
+          description: Отчёт обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Исполнитель не назначен на этот заказ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /worker/orders/{id}/complete:
+    patch:
+      tags: [orders]
+      summary: Завершить заказ
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Заказ завершён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Исполнитель не назначен или заказ уже завершён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==================== OWNER ====================
+
+  /owner/workers:
+    post:
+      tags: [auth]
+      summary: Создать нового исполнителя (только владелец)
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkerRequest'
+      responses:
+        '201':
+          description: Исполнитель создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Worker'
+        '403':
+          description: Только владелец может создавать исполнителей
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /owner/requests/new:
+    get:
+      tags: [requests]
+      summary: Новые (необработанные) заявки
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список новых заявок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+
+  /owner/requests/all:
+    get:
+      tags: [requests]
+      summary: Все заявки
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список всех заявок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Request'
+
+  /owner/requests/convert:
+    post:
+      tags: [requests]
+      summary: Создать заказ из заявки и пометить заявку как converted
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderFromRequestInput'
+      responses:
+        '201':
+          description: Заказ создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Заявка уже обработана или не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /owner/requests/{id}/cancel:
+    patch:
+      tags: [requests]
+      summary: Отменить заявку
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Заявка отменена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /owner/orders/direct:
+    post:
+      tags: [orders]
+      summary: Создать заказ без заявки
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderDirectInput'
+      responses:
+        '201':
+          description: Заказ создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /owner/orders/planned:
+    get:
+      tags: [orders]
+      summary: Все запланированные заказы
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список всех запланированных заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /owner/orders/history:
+    get:
+      tags: [orders]
+      summary: Все выполненные заказы
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список всех выполненных заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /owner/orders/{orderId}/workers/{workerId}:
+    delete:
+      tags: [orders]
+      summary: Снять исполнителя с заказа
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Исполнитель снят
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /owner/statistics/workers/{workerId}:
+    get:
+      tags: [statistics]
+      summary: Статистика по конкретному исполнителю
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: workerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+            example: "2026-01-01"
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+            example: "2026-12-31"
+      responses:
+        '200':
+          description: Статистика по исполнителю
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerStats'
+
+  /owner/statistics/all:
+    get:
+      tags: [statistics]
+      summary: Статистика по всем исполнителям
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+            example: "2026-01-01"
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+            example: "2026-12-31"
+      responses:
+        '200':
+          description: Статистика по всем исполнителям
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkerStats'
+
+  # ==================== PUBLIC ====================
+
+  /public/requests:
+    post:
+      tags: [requests]
+      summary: Создать заявку с сайта (публичный доступ)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequestInput'
+      responses:
+        '201':
+          description: Заявка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'

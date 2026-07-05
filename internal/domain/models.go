@@ -1,12 +1,13 @@
 package domain
 
 import (
-	"time"
 	"github.com/google/uuid"
+	"time"
 )
 
 // роль работника
 type WorkerRole string
+
 const (
 	RoleOwner  WorkerRole = "owner"
 	RoleWorker WorkerRole = "worker"
@@ -14,6 +15,7 @@ const (
 
 // статус заявки
 type RequestStatus string
+
 const (
 	RequestNew       RequestStatus = "new"
 	RequestConverted RequestStatus = "converted"
@@ -22,12 +24,12 @@ const (
 
 // заявка
 type Request struct {
-	ID        uuid.UUID      `json:"id"`
-	Name      string         `json:"name"`
-	Phone     string         `json:"phone"`
-	Comment   *string        `json:"comment,omitempty"`
-	Status    RequestStatus  `json:"status"`
-	CreatedAt time.Time      `json:"created_at"`
+	ID        uuid.UUID     `json:"id"`
+	Name      string        `json:"name"`
+	Phone     string        `json:"phone"`
+	Comment   *string       `json:"comment,omitempty"`
+	Status    RequestStatus `json:"status"`
+	CreatedAt time.Time     `json:"created_at"`
 }
 
 // работник
@@ -48,7 +50,7 @@ type Order struct {
 	Description    *string    `json:"description,omitempty"`
 	EstimatedPrice *float64   `json:"estimated_price,omitempty"`
 	PlannedDate    *time.Time `json:"planned_date,omitempty"`
-	CreatedBy      uuid.UUID      `json:"created_by"`
+	CreatedBy      uuid.UUID  `json:"created_by"`
 	CreatedAt      time.Time  `json:"created_at"`
 	CompletedAt    *time.Time `json:"completed_at,omitempty"`
 }

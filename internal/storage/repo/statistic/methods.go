@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// StatsRow — строка статистики по одному исполнителю.
 type StatsRow struct {
 	WorkerID       uuid.UUID
 	WorkerName     string
@@ -18,7 +17,7 @@ type StatsRow struct {
 	TotalTimeSpent int
 }
 
-// ByWorker возвращает статистику по конкретному исполнителю за период.
+// статистика по исполнителю за период
 func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from, to time.Time) (*StatsRow, error) {
 	query := `
 		SELECT w.id, w.name,
@@ -34,18 +33,22 @@ func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from,
 		GROUP BY w.id, w.name`
 
 	row := &StatsRow{}
-	err := r.db.DB.QueryRowContext(ctx, query, workerID, from, to).
-		Scan(&row.WorkerID, &row.WorkerName, &row.OrdersCount, &row.TotalEarned, &row.TotalTimeSpent)
+	err := r.db.DB.QueryRowContext(ctx, query, workerID, from, to).Scan(
+		&row.WorkerID,
+		&row.WorkerName,
+		&row.OrdersCount,
+		&row.TotalEarned,
+		&row.TotalTimeSpent)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &StatsRow{WorkerID: workerID}, nil
 		}
-		return nil, fmt.Errorf("stats by worker: %w", err)
+		return nil, fmt.Errorf("error in stats by worker: %w", err)
 	}
 	return row, nil
 }
 
-// AllWorkers возвращает статистику по всем исполнителям за период.
+// статистика по всем исполнителям за период
 func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]StatsRow, error) {
 	query := `
 		SELECT w.id, w.name,
@@ -62,15 +65,20 @@ func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]
 
 	rows, err := r.db.DB.QueryContext(ctx, query, from, to)
 	if err != nil {
-		return nil, fmt.Errorf("stats all workers: %w", err)
+		return nil, fmt.Errorf("error in stats all workers: %w", err)
 	}
 	defer rows.Close()
 
 	stats := make([]StatsRow, 0)
 	for rows.Next() {
 		var s StatsRow
-		if err := rows.Scan(&s.WorkerID, &s.WorkerName, &s.OrdersCount, &s.TotalEarned, &s.TotalTimeSpent); err != nil {
-			return nil, fmt.Errorf("scan stats: %w", err)
+		if err := rows.Scan(
+			&s.WorkerID,
+			&s.WorkerName,
+			&s.OrdersCount,
+			&s.TotalEarned,
+			&s.TotalTimeSpent); err != nil {
+			return nil, fmt.Errorf("error in scan stats: %w", err)
 		}
 		stats = append(stats, s)
 	}

@@ -16,11 +16,12 @@ func (r *WorkerRepo) Create(ctx context.Context, w *domain.Worker) error {
 		 	VALUES ($1, $2, $3, $4)
 		 	RETURNING id, created_at
 			`
-	
+
 	err := r.db.DB.QueryRowContext(ctx, query, w.Name, w.Phone, w.Role, w.PasswordHash).Scan(&w.ID, &w.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("error in create worker: %w", err)
 	}
+
 	return nil
 }
 
@@ -41,6 +42,7 @@ func (r *WorkerRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.Worker,
 		}
 		return nil, fmt.Errorf("error in get worker: %w", err)
 	}
+
 	return w, nil
 }
 
@@ -61,6 +63,7 @@ func (r *WorkerRepo) GetByPhone(ctx context.Context, phone string) (*domain.Work
 		}
 		return nil, fmt.Errorf("error in get worker by phone: %w", err)
 	}
+
 	return w, nil
 }
 
@@ -71,7 +74,7 @@ func (r *WorkerRepo) List(ctx context.Context) ([]domain.Worker, error) {
 		 	FROM workers
 		 	ORDER BY created_at
 			`
-	
+
 	rows, err := r.db.DB.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("error in list workers: %w", err)
@@ -86,5 +89,6 @@ func (r *WorkerRepo) List(ctx context.Context) ([]domain.Worker, error) {
 		}
 		workers = append(workers, w)
 	}
+
 	return workers, rows.Err()
 }

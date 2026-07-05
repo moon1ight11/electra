@@ -12,20 +12,22 @@ import (
 func (h *WorkerHandler) CreateWorker(c *gin.Context) {
 	var req models.CreateWorkerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		h.logger.Error("error in sbjson in create worker", "error", err, "req", req)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "name, phone and password required"})
 		return
 	}
 
-	ownerID := c.GetString("UserId")
-	ownerUUID, err := uuid.Parse(ownerID)
+	ownerID, err := uuid.Parse(c.GetString("UserId"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id"})
+		h.logger.Error("error in parce id in create worker", "error", err, "owner_id", ownerID)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
 		return
 	}
 
-	worker, err := h.authService.CreateWorker(c.Request.Context(), ownerUUID, req.Name, req.Phone, req.Password)
+	worker, err := h.authService.CreateWorker(c.Request.Context(), ownerID, req.Name, req.Phone, req.Password)
 	if err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		h.logger.Error("error in service in create worker", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

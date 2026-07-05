@@ -36,7 +36,7 @@ func Auth(jwtService jwt.TokenService, logger logger.Logger) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("UserId", *claims.UserId)
+		c.Set("UserId", claims.UserId.String())
 		c.Set("UserRole", claims.Role)
 
 		c.Next()
@@ -56,6 +56,7 @@ func AuthOwner(logger logger.Logger) gin.HandlerFunc {
 
 		r, ok := role.(domain.WorkerRole)
 		if !ok || r != domain.RoleOwner {
+			logger.Error("Error in AuthOwner", "error:", "role not owner")
 			c.JSON(http.StatusForbidden, gin.H{"error": "owner only"})
 			c.Abort()
 			return
