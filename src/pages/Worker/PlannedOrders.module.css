@@ -1,0 +1,112 @@
+.page {
+  max-width: 700px;
+}
+
+.page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #6B6355;
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+.status {
+  font-size: 16px;
+  color: #6B6355;
+  padding: 40px 0;
+}
+
+.empty {
+  background: #FCFAF6;
+  padding: 48px 24px;
+  border-radius: 18px;
+  text-align: center;
+  color: #8B8270;
+  border: 1px dashed #DDD6C8;
+  font-size: 15px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FCFAF6;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+  box-shadow: 0 2px 8px rgba(44, 36, 22, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(44, 36, 22, 0.05);
+}
+
+.cardLeft {
+  flex: 1;
+}
+
+.address {
+  font-size: 17px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.description {
+  font-size: 14px;
+  color: #6B6355;
+  margin-top: 4px;
+}
+
+.cardRight {
+  text-align: right;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date {
+  font-size: 14px;
+  color: #8B8270;
+  font-weight: 500;
+}
+
+.price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #B87333;
+}
+
+.reportDone,
+.reportPending {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.reportDone {
+  background: #E8F0E4;
+  color: #3D4A3E;
+}
+
+.reportPending {
+  background: #FFF5E8;
+  color: #B87333;
+}

@@ -1,0 +1,80 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty {
+  background: #FCFAF6;
+  padding: 48px 24px;
+  border-radius: 18px;
+  text-align: center;
+  color: #8B8270;
+  border: 1px dashed #DDD6C8;
+  font-size: 15px;
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FCFAF6;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+  box-shadow: 0 2px 8px rgba(44, 36, 22, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(44, 36, 22, 0.05);
+}
+
+.cardLeft {
+  flex: 1;
+}
+
+.address {
+  font-size: 17px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.description {
+  font-size: 14px;
+  color: #6B6355;
+  margin-top: 4px;
+}
+
+.cardRight {
+  text-align: right;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.date {
+  font-size: 14px;
+  color: #8B8270;
+  font-weight: 500;
+}
+
+.price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #B87333;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #F0ECE0;
+  color: #6B6355;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}

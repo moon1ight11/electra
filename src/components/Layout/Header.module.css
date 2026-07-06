@@ -1,0 +1,113 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  height: 60px;
+  background: rgba(61, 74, 62, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #FCFAF6;
+  border-bottom: 1px solid rgba(212, 160, 48, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logoImg {
+  height: 30px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.greeting {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FCFAF6;
+}
+
+.role {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.7;
+  background: rgba(252, 250, 246, 0.1);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.logoutBtn {
+  padding: 7px 16px;
+  background: rgba(252, 250, 246, 0.08);
+  color: #FCFAF6;
+  border: 1px solid rgba(252, 250, 246, 0.15);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: rgba(252, 250, 246, 0.14);
+  border-color: rgba(252, 250, 246, 0.3);
+}
+
+/* Бургер */
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #FCFAF6;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 16px;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .greeting {
+    display: none;
+  }
+
+  .role {
+    display: none;
+  }
+
+  .logoutBtn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+.logoImg {
+  height: 30px;
+}
+
+@media (max-width: 768px) {
+  .logoImg {
+    height: 22px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

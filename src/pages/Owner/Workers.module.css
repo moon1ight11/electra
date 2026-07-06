@@ -1,0 +1,238 @@
+.page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.status {
+  font-size: 16px;
+  color: #6B6355;
+  padding: 40px 0;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.addBtn {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #D4A030 0%, #B87333 100%);
+  color: #FCFAF6;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.addBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(184, 115, 51, 0.2);
+}
+
+.success {
+  color: #3D4A3E;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: #B84530;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Сводка */
+.summaryNumber {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.summaryLabel {
+  font-size: 13px;
+  color: #8B8270;
+  font-weight: 500;
+}
+
+/* Топ-лист */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #FCFAF6;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+  box-shadow: 0 2px 8px rgba(44, 36, 22, 0.03);
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+}
+
+.rank {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rankGold,
+.rankSilver,
+.rankBronze,
+.rankDefault {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rankGold {
+  background: linear-gradient(135deg, #D4A030, #E8C84A);
+  color: #3D2A00;
+}
+
+.rankSilver {
+  background: linear-gradient(135deg, #C0C0C0, #E0E0E0);
+  color: #3D3D3D;
+}
+
+.rankBronze {
+  background: linear-gradient(135deg, #B87333, #D49A5A);
+  color: #FFF5E8;
+}
+
+.rankDefault {
+  background: #F0ECE0;
+  color: #8B8270;
+}
+
+.cardBody {
+  flex: 1;
+}
+
+.workerName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #8B8270;
+}
+
+.earned {
+  font-weight: 700;
+  color: #B87333;
+}
+
+.topBadge {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* Модалка */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.form {
+  background: #FCFAF6;
+  padding: 32px 28px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 40px rgba(44, 36, 22, 0.12);
+}
+
+.form h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5C5545;
+}
+
+.form input {
+  padding: 12px 16px;
+  border: 1.5px solid #DDD6C8;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #FFFDF9;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.form input:focus {
+  border-color: #D4A030;
+  box-shadow: 0 0 0 3px rgba(212, 160, 48, 0.1);
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.submitBtn,
+.cancelBtn {
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #D4A030 0%, #B87333 100%);
+  color: #FCFAF6;
+}
+
+.cancelBtn {
+  background: #F0ECE0;
+  color: #6B6355;
+}
