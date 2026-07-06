@@ -65,3 +65,9 @@ type OrderWorker struct {
 	MaterialsUsed *string   `json:"materials_used,omitempty"`
 	Notes         *string   `json:"notes,omitempty"`
 }
+
+type SummaryRow struct {
+	OrdersCount    int
+	TotalEarned    float64
+	TotalTimeSpent int
+}

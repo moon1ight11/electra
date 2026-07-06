@@ -17,6 +17,8 @@ tags:
     description: Отчёты исполнителей
   - name: statistics
     description: Статистика для владельца
+  - name: workers
+    description: Исполнители
 
 components:
   securitySchemes:
@@ -26,8 +28,6 @@ components:
       name: cookie
 
   schemas:
-
-    # --- Auth ---
     LoginRequest:
       type: object
       required: [phone, password]
@@ -53,7 +53,6 @@ components:
           type: string
           example: "securepass"
 
-    # --- Requests ---
     CreateRequestInput:
       type: object
       required: [name, phone]
@@ -88,7 +87,6 @@ components:
           type: string
           format: date-time
 
-    # --- Orders ---
     CreateOrderFromRequestInput:
       type: object
       required: [request_id, address, worker_ids]
@@ -171,7 +169,6 @@ components:
           format: date-time
           nullable: true
 
-    # --- Reports ---
     UpdateReportInput:
       type: object
       required: [order_id]
@@ -181,7 +178,6 @@ components:
           format: uuid
         time_spent:
           type: integer
-          description: Затраченное время в минутах
           example: 180
         earned_amount:
           type: number
@@ -218,7 +214,15 @@ components:
           type: string
           nullable: true
 
-    # --- Statistics ---
+    WorkerInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
     WorkerStats:
       type: object
       properties:
@@ -234,26 +238,16 @@ components:
         total_time_spent:
           type: integer
 
-    # --- Worker ---
-    Worker:
+    SummaryStats:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        phone:
-          type: string
-          nullable: true
-        role:
-          type: string
-          enum: [owner, worker]
-        created_at:
-          type: string
-          format: date-time
+        orders_count:
+          type: integer
+        total_earned:
+          type: number
+        total_time_spent:
+          type: integer
 
-    # --- Common ---
     Message:
       type: object
       properties:
@@ -268,7 +262,6 @@ components:
 
 paths:
   # ==================== AUTH ====================
-
   /auth/login:
     post:
       tags: [auth]
@@ -291,15 +284,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
-        '401':
-          description: Неверный телефон или пароль
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   # ==================== WORKER ====================
-
   /worker/logout:
     post:
       tags: [auth]
@@ -314,10 +300,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
 
+  /worker/me:
+    get:
+      tags: [auth]
+      summary: Информация о текущем пользователе
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerInfo'
+
+  /worker/workers:
+    get:
+      tags: [workers]
+      summary: Список всех исполнителей (id + имя)
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Список исполнителей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkerInfo'
+
   /worker/orders/planned:
     get:
       tags: [orders]
-      summary: Запланированные заказы текущего исполнителя
+      summary: Заказы в работе текущего исполнителя
       security:
         - cookieAuth: []
       responses:
@@ -333,7 +349,7 @@ paths:
   /worker/orders/history:
     get:
       tags: [orders]
-      summary: История выполненных заказов текущего исполнителя
+      summary: История выполненных заказов исполнителя
       security:
         - cookieAuth: []
       responses:
@@ -368,12 +384,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OrderWorker'
-        '403':
-          description: Исполнитель не назначен на этот заказ
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   /worker/orders/report:
     patch:
@@ -394,45 +404,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
-        '403':
-          description: Исполнитель не назначен на этот заказ
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /worker/orders/{id}/complete:
-    patch:
-      tags: [orders]
-      summary: Завершить заказ
-      security:
-        - cookieAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: Заказ завершён
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Message'
-        '403':
-          description: Исполнитель не назначен или заказ уже завершён
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   # ==================== OWNER ====================
-
   /owner/workers:
     post:
-      tags: [auth]
+      tags: [workers]
       summary: Создать нового исполнителя (только владелец)
       security:
         - cookieAuth: []
@@ -448,18 +424,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Worker'
-        '403':
-          description: Только владелец может создавать исполнителей
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/WorkerInfo'
 
   /owner/requests/new:
     get:
       tags: [requests]
-      summary: Новые (необработанные) заявки
+      summary: Новые заявки
       security:
         - cookieAuth: []
       responses:
@@ -491,7 +461,7 @@ paths:
   /owner/requests/convert:
     post:
       tags: [requests]
-      summary: Создать заказ из заявки и пометить заявку как converted
+      summary: Создать заказ из заявки
       security:
         - cookieAuth: []
       requestBody:
@@ -507,12 +477,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
-          description: Заявка уже обработана или не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
 
   /owner/requests/{id}/cancel:
     patch:
@@ -558,12 +522,12 @@ paths:
   /owner/orders/planned:
     get:
       tags: [orders]
-      summary: Все запланированные заказы
+      summary: Все заказы в работе
       security:
         - cookieAuth: []
       responses:
         '200':
-          description: Список всех запланированных заказов
+          description: Список заказов
           content:
             application/json:
               schema:
@@ -579,13 +543,34 @@ paths:
         - cookieAuth: []
       responses:
         '200':
-          description: Список всех выполненных заказов
+          description: Список выполненных заказов
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
+
+  /owner/orders/{id}/complete:
+    patch:
+      tags: [orders]
+      summary: Завершить заказ (владелец)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Заказ завершён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
 
   /owner/orders/{orderId}/workers/{workerId}:
     delete:
@@ -617,7 +602,7 @@ paths:
   /owner/statistics/workers/{workerId}:
     get:
       tags: [statistics]
-      summary: Статистика по конкретному исполнителю
+      summary: Статистика по исполнителю
       security:
         - cookieAuth: []
       parameters:
@@ -632,13 +617,11 @@ paths:
           schema:
             type: string
             format: date
-            example: "2026-01-01"
         - name: to
           in: query
           schema:
             type: string
             format: date
-            example: "2026-12-31"
       responses:
         '200':
           description: Статистика по исполнителю
@@ -659,16 +642,14 @@ paths:
           schema:
             type: string
             format: date
-            example: "2026-01-01"
         - name: to
           in: query
           schema:
             type: string
             format: date
-            example: "2026-12-31"
       responses:
         '200':
-          description: Статистика по всем исполнителям
+          description: Статистика по всем
           content:
             application/json:
               schema:
@@ -676,8 +657,32 @@ paths:
                 items:
                   $ref: '#/components/schemas/WorkerStats'
 
-  # ==================== PUBLIC ====================
+  /owner/statistics/summary:
+    get:
+      tags: [statistics]
+      summary: Сводная статистика по компании
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Сводная статистика
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryStats'
 
+  # ==================== PUBLIC ====================
   /public/requests:
     post:
       tags: [requests]

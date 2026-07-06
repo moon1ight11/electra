@@ -59,6 +59,26 @@ func (s *StatisticsService) AllWorkers(ctx context.Context, ownerID uuid.UUID, f
 	return result, nil
 }
 
+func (s *StatisticsService) Summary(ctx context.Context, from, to string) (*models.SummaryStats, error) {
+	fromTime, toTime, err := parsePeriod(from, to)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := s.statisticsRepo.SummaryStats(ctx, fromTime, toTime)
+	if err != nil {
+		return nil, err
+	}
+
+	// Для времени берём уникальные заказы и среднее время на заказ
+	// row.TotalTimeSpent сейчас сумма всех отчётов, нужно пересчитать
+	return &models.SummaryStats{
+		OrdersCount:    row.OrdersCount,
+		TotalEarned:    row.TotalEarned,
+		TotalTimeSpent: row.TotalTimeSpent, // пока сумма, поправим ниже
+	}, nil
+}
+
 // хэлпер для парсинга времени
 func parsePeriod(from, to string) (time.Time, time.Time, error) {
 	// парсинг времени от

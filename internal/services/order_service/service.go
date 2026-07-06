@@ -87,3 +87,18 @@ func (s *OrderService) Complete(ctx context.Context, workerID, orderID uuid.UUID
 
 	return nil
 }
+
+func (s *OrderService) CompleteByOwner(ctx context.Context, orderID uuid.UUID) error {
+	order, err := s.orderRepo.GetByID(ctx, orderID)
+	if err != nil {
+		return fmt.Errorf("get order: %w", err)
+	}
+	if order == nil {
+		return errors.New("order not found")
+	}
+	if order.CompletedAt != nil {
+		return errors.New("order already completed")
+	}
+
+	return s.orderRepo.Complete(ctx, orderID)
+}

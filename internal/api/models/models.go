@@ -51,3 +51,9 @@ type CreateRequestInput struct {
 	Phone   string `json:"phone" binding:"required"`
 	Comment string `json:"comment"`
 }
+
+type SummaryStats struct {
+	OrdersCount    int     `json:"orders_count"`
+	TotalEarned    float64 `json:"total_earned"`
+	TotalTimeSpent int     `json:"total_time_spent"`
+}

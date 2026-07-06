@@ -12,4 +12,5 @@ type StatisticsService interface {
 	ByWorker(ctx context.Context, ownerID, workerID uuid.UUID, from, to string) (*models.WorkerStats, error)
 	// возвращает общую статистику по всем исполнителям за период
 	AllWorkers(ctx context.Context, ownerID uuid.UUID, from, to string) ([]models.WorkerStats, error)
+	Summary(ctx context.Context, from, to string) (*models.SummaryStats, error)
 }

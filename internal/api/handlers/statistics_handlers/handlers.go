@@ -57,3 +57,16 @@ func (h *StatisticsHandler) AllWorkers(c *gin.Context) {
 
 	c.JSON(http.StatusOK, stats)
 }
+
+func (h *StatisticsHandler) Summary(c *gin.Context) {
+	from := c.Query("from")
+	to := c.Query("to")
+
+	stats, err := h.statisticsService.Summary(c.Request.Context(), from, to)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, stats)
+}

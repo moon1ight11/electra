@@ -36,21 +36,22 @@ func (s *OrderWorkerService) UpdateReport(ctx context.Context, workerID uuid.UUI
 
 // получение отчета из заказа
 func (s *OrderWorkerService) GetByOrder(ctx context.Context, userID, orderID uuid.UUID) ([]domain.OrderWorker, error) {
-	// работник видит только если он назначен на заказ
-	ow, err := s.orderWorkerRepo.GetByOrderAndWorker(ctx, orderID, userID)
-	if err != nil {
-		return nil, fmt.Errorf("error in get by order (check access): %w", err)
-	}
-	if ow == nil {
-		return nil, errors.New("error in get by order (access denied): not assigned to this order")
+	// Если пользователь назначен на заказ — показываем
+	ow, _ := s.orderWorkerRepo.GetByOrderAndWorker(ctx, orderID, userID)
+	if ow != nil {
+		return s.orderWorkerRepo.GetByOrder(ctx, orderID)
 	}
 
-	orw, err := s.orderWorkerRepo.GetByOrder(ctx, orderID)
+	// Если не назначен — проверяем, может это владелец
+	worker, err := s.workerRepo.GetByID(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("error in get by worker: %w", err)
+		return nil, fmt.Errorf("get user: %w", err)
+	}
+	if worker != nil && worker.Role == domain.RoleOwner {
+		return s.orderWorkerRepo.GetByOrder(ctx, orderID)
 	}
 
-	return orw, nil
+	return nil, errors.New("access denied: not assigned to this order")
 }
 
 // удаление работника из заказа

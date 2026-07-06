@@ -2,6 +2,7 @@ package authservice
 
 import (
 	"context"
+	"electra/internal/api/handlers/interfaces"
 	"electra/internal/domain"
 	"errors"
 	"fmt"
@@ -86,4 +87,36 @@ func (s *AuthService) CreateWorker(ctx context.Context, ownerID uuid.UUID, name,
 	}
 
 	return worker, nil
+}
+
+func (s *AuthService) ListWorkers(ctx context.Context) ([]interfaces.WorkerInfo, error) {
+	workers, err := s.workerRepo.List(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list workers: %w", err)
+	}
+
+	result := make([]interfaces.WorkerInfo, len(workers))
+	for i, w := range workers {
+		result[i] = interfaces.WorkerInfo{
+			ID:   w.ID,
+			Name: w.Name,
+		}
+	}
+	return result, nil
+}
+
+// GetMe возвращает информацию о текущем пользователе.
+func (s *AuthService) GetMe(ctx context.Context, userID uuid.UUID) (*interfaces.WorkerInfo, error) {
+	worker, err := s.workerRepo.GetByID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("get me: %w", err)
+	}
+	if worker == nil {
+		return nil, errors.New("worker not found")
+	}
+
+	return &interfaces.WorkerInfo{
+		ID:   worker.ID,
+		Name: worker.Name,
+	}, nil
 }

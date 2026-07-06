@@ -19,7 +19,7 @@ func (h *WorkerHandler) CreateWorker(c *gin.Context) {
 
 	ownerID, err := uuid.Parse(c.GetString("UserId"))
 	if err != nil {
-		h.logger.Error("error in parce id in create worker", "error", err, "owner_id", ownerID)
+		h.logger.Error("error in parce id in stat by worker", "error", err, "owner_id", ownerID)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
 		return
 	}
@@ -32,4 +32,35 @@ func (h *WorkerHandler) CreateWorker(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, worker)
+}
+
+func (h *WorkerHandler) ListWorkers(c *gin.Context) {
+	workers, err := h.authService.ListWorkers(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, workers)
+}
+
+// GetMe возвращает информацию о текущем пользователе.
+func (h *WorkerHandler) GetMe(c *gin.Context) {
+	userIDStr := c.GetString("UserId")
+	if userIDStr == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	worker, err := h.authService.GetMe(c.Request.Context(), userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, worker)
 }

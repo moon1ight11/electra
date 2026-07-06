@@ -82,7 +82,7 @@ func (a *App) Init() error {
 	authService := authservice.NewAuthService(workerRepo, jwtService)
 	requestService := requestservice.NewRequestService(requestRepo, orderRepo)
 	orderService := orderservice.NewOrderService(orderRepo, orderWorkerRepo)
-	orderWorkerService := orderworkerservice.NewOrderWorkerService(orderWorkerRepo)
+	orderWorkerService := orderworkerservice.NewOrderWorkerService(orderWorkerRepo, workerRepo)
 	statisticsService := statisticservice.NewStatisticsService(statisticsRepo)
 
 	// слой хэндлеров

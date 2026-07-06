@@ -17,4 +17,5 @@ type OrderService interface {
 	ListAllPlanned(ctx context.Context, ownerID uuid.UUID) ([]domain.Order, error)
 	// завершает заказ
 	Complete(ctx context.Context, workerID uuid.UUID, orderID uuid.UUID) error
+	CompleteByOwner(ctx context.Context, orderID uuid.UUID) error
 }

@@ -95,3 +95,18 @@ func (h *OrderHandler) Complete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "order completed"})
 }
+
+func (h *OrderHandler) CompleteByOwner(c *gin.Context) {
+	orderID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid order id"})
+		return
+	}
+
+	if err := h.orderService.CompleteByOwner(c.Request.Context(), orderID); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "order completed"})
+}
