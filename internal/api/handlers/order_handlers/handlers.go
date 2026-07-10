@@ -96,6 +96,7 @@ func (h *OrderHandler) Complete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "order completed"})
 }
 
+// завершение заказа владельцем
 func (h *OrderHandler) CompleteByOwner(c *gin.Context) {
 	orderID, err := uuid.Parse(c.Param("id"))
 	if err != nil {

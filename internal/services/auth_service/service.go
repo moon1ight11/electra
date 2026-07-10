@@ -89,6 +89,7 @@ func (s *AuthService) CreateWorker(ctx context.Context, ownerID uuid.UUID, name,
 	return worker, nil
 }
 
+// список работников
 func (s *AuthService) ListWorkers(ctx context.Context) ([]interfaces.WorkerInfo, error) {
 	workers, err := s.workerRepo.List(ctx)
 	if err != nil {
@@ -105,7 +106,7 @@ func (s *AuthService) ListWorkers(ctx context.Context) ([]interfaces.WorkerInfo,
 	return result, nil
 }
 
-// GetMe возвращает информацию о текущем пользователе.
+// инфо о текущем пользователе.
 func (s *AuthService) GetMe(ctx context.Context, userID uuid.UUID) (*interfaces.WorkerInfo, error) {
 	worker, err := s.workerRepo.GetByID(ctx, userID)
 	if err != nil {

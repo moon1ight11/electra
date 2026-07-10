@@ -2,6 +2,7 @@ package models
 
 import "github.com/google/uuid"
 
+// заказ из заявки
 type CreateOrderFromRequestInput struct {
 	RequestID      uuid.UUID   `json:"request_id" binding:"required"`
 	Address        string      `json:"address" binding:"required"`
@@ -11,6 +12,7 @@ type CreateOrderFromRequestInput struct {
 	WorkerIDs      []uuid.UUID `json:"worker_ids" binding:"required"`
 }
 
+// заказ мимо заявки
 type CreateOrderDirectInput struct {
 	Address        string      `json:"address" binding:"required"`
 	Description    string      `json:"description"`
@@ -19,6 +21,7 @@ type CreateOrderDirectInput struct {
 	WorkerIDs      []uuid.UUID `json:"worker_ids" binding:"required"`
 }
 
+// обновление отчета
 type UpdateReportInput struct {
 	OrderID       uuid.UUID `json:"order_id" binding:"required"`
 	TimeSpent     *int      `json:"time_spent"`
@@ -27,6 +30,7 @@ type UpdateReportInput struct {
 	Notes         *string   `json:"notes"`
 }
 
+// статистика работника
 type WorkerStats struct {
 	WorkerID       uuid.UUID `json:"worker_id"`
 	WorkerName     string    `json:"worker_name"`
@@ -35,6 +39,7 @@ type WorkerStats struct {
 	TotalTimeSpent int       `json:"total_time_spent"`
 }
 
+// запрос на логин
 type LoginRequest struct {
 	Phone    string `json:"phone" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -46,12 +51,14 @@ type CreateWorkerRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// создание заявки
 type CreateRequestInput struct {
 	Name    string `json:"name" binding:"required"`
 	Phone   string `json:"phone" binding:"required"`
 	Comment string `json:"comment"`
 }
 
+// общая статистика
 type SummaryStats struct {
 	OrdersCount    int     `json:"orders_count"`
 	TotalEarned    float64 `json:"total_earned"`

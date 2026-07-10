@@ -59,6 +59,7 @@ func (s *StatisticsService) AllWorkers(ctx context.Context, ownerID uuid.UUID, f
 	return result, nil
 }
 
+// общая статистика
 func (s *StatisticsService) Summary(ctx context.Context, from, to string) (*models.SummaryStats, error) {
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {

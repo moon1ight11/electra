@@ -34,6 +34,7 @@ func (h *WorkerHandler) CreateWorker(c *gin.Context) {
 	c.JSON(http.StatusCreated, worker)
 }
 
+// список работников
 func (h *WorkerHandler) ListWorkers(c *gin.Context) {
 	workers, err := h.authService.ListWorkers(c.Request.Context())
 	if err != nil {
@@ -43,7 +44,7 @@ func (h *WorkerHandler) ListWorkers(c *gin.Context) {
 	c.JSON(http.StatusOK, workers)
 }
 
-// GetMe возвращает информацию о текущем пользователе.
+// инфо о текущем пользователе
 func (h *WorkerHandler) GetMe(c *gin.Context) {
 	userIDStr := c.GetString("UserId")
 	if userIDStr == "" {

@@ -66,6 +66,7 @@ type OrderWorker struct {
 	Notes         *string   `json:"notes,omitempty"`
 }
 
+// суммарная статистика
 type SummaryRow struct {
 	OrdersCount    int
 	TotalEarned    float64

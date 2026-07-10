@@ -88,6 +88,7 @@ func (s *OrderService) Complete(ctx context.Context, workerID, orderID uuid.UUID
 	return nil
 }
 
+// завершение заказа владельцем
 func (s *OrderService) CompleteByOwner(ctx context.Context, orderID uuid.UUID) error {
 	order, err := s.orderRepo.GetByID(ctx, orderID)
 	if err != nil {

@@ -17,6 +17,8 @@ type AuthService interface {
 	Login(ctx context.Context, phone, password string) (string, error)
 	// создаёт нового исполнителя (только владелец)
 	CreateWorker(ctx context.Context, ownerID uuid.UUID, name, phone, password string) (*domain.Worker, error)
+	// получает список работников
 	ListWorkers(ctx context.Context) ([]WorkerInfo, error)
+	// получает информацию обо мне
 	GetMe(ctx context.Context, userID uuid.UUID) (*WorkerInfo, error)
 }

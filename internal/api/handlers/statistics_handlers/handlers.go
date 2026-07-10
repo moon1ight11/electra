@@ -58,6 +58,7 @@ func (h *StatisticsHandler) AllWorkers(c *gin.Context) {
 	c.JSON(http.StatusOK, stats)
 }
 
+// общая статистика
 func (h *StatisticsHandler) Summary(c *gin.Context) {
 	from := c.Query("from")
 	to := c.Query("to")

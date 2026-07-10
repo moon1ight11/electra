@@ -91,6 +91,7 @@ func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]
 	return stats, rows.Err()
 }
 
+// общая статистика
 func (r *StatisticsRepo) SummaryStats(ctx context.Context, from, to time.Time) (*SummaryRow, error) {
 	query := `
 		SELECT
