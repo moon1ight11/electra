@@ -30,11 +30,7 @@ func (s *AuthService) Login(ctx context.Context, phone, password string) (string
 		return "", errors.New("error in login: worker not found")
 	}
 
-	// if err := bcrypt.CompareHashAndPassword([]byte(worker.PasswordHash), []byte(password)); err != nil {
-	// 	return "", errors.New("invalid password")
-	// }
-
-	if worker.PasswordHash != password {
+	if err := bcrypt.CompareHashAndPassword([]byte(worker.PasswordHash), []byte(password)); err != nil {
 		return "", errors.New("invalid password")
 	}
 
