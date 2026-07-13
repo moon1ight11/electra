@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Electra API
-  version: 1.0.0
+  version: 1.1.0
 
 servers:
   - url: http://localhost:8080/api/v1
@@ -34,7 +34,7 @@ components:
       properties:
         phone:
           type: string
-          example: "79001234567"
+          example: "+7 (999) 123-45-67"
         password:
           type: string
           example: "owner123"
@@ -48,10 +48,24 @@ components:
           example: "Новый Электрик"
         phone:
           type: string
-          example: "79161112233"
+          example: "+7 (916) 111-22-33"
         password:
           type: string
           example: "securepass"
+        specialization:
+          type: string
+          example: "Электрик"
+
+    WorkerInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        specialization:
+          type: string
 
     CreateRequestInput:
       type: object
@@ -62,7 +76,7 @@ components:
           example: "Иван Петров"
         phone:
           type: string
-          example: "79161234567"
+          example: "+7 (916) 123-45-67"
         comment:
           type: string
           example: "Нужно подключить дом"
@@ -136,6 +150,27 @@ components:
             type: string
             format: uuid
 
+    UpdateOrderInput:
+      type: object
+      required: [id, address]
+      properties:
+        id:
+          type: string
+          format: uuid
+        address:
+          type: string
+          example: "ул. Ленина, д. 5"
+        description:
+          type: string
+          example: "Подключение дома 380В"
+        estimated_price:
+          type: number
+          example: 25000
+        planned_date:
+          type: string
+          format: date
+          example: "2026-07-15"
+
     Order:
       type: object
       properties:
@@ -145,6 +180,9 @@ components:
         request_id:
           type: string
           format: uuid
+          nullable: true
+        request_phone:
+          type: string
           nullable: true
         address:
           type: string
@@ -213,15 +251,6 @@ components:
         notes:
           type: string
           nullable: true
-
-    WorkerInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
 
     WorkerStats:
       type: object
@@ -317,7 +346,7 @@ paths:
   /worker/workers:
     get:
       tags: [workers]
-      summary: Список всех исполнителей (id + имя)
+      summary: Список всех исполнителей (id + имя + специализация)
       security:
         - cookieAuth: []
       responses:
@@ -405,11 +434,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
 
+  /worker/orders/{id}/complete:
+    patch:
+      tags: [orders]
+      summary: Завершить заказ (исполнитель)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Заказ завершён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
   # ==================== OWNER ====================
   /owner/workers:
     post:
       tags: [workers]
-      summary: Создать нового исполнителя (только владелец)
+      summary: Создать нового исполнителя
       security:
         - cookieAuth: []
       requestBody:
@@ -571,6 +621,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Message'
+
+  /owner/orders/edit:
+    patch:
+      tags: [orders]
+      summary: Редактировать заказ
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderInput'
+      responses:
+        '200':
+          description: Заказ обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
 
   /owner/orders/{orderId}/workers/{workerId}:
     delete:
