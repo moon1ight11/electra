@@ -1,15 +1,16 @@
-temp_files/
-logs/
-*.log
-
-config.yaml
-example.config.yaml
-
-docker-compose*.yml
-
 .git
 .gitignore
-.github/
+
+logs/
+temp_files/
+*.log
+tmp/
+
+config.yaml
+config.yml
+.env
+
+electra
 
 docs/
-README.md
+*_test.go
