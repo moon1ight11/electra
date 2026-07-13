@@ -35,7 +35,7 @@ func (s *RequestService) Create(ctx context.Context, name, phone, comment string
 	return req, nil
 }
 
-// список новых заявок
+// получение списка новых заявок
 func (s *RequestService) ListNew(ctx context.Context, ownerID uuid.UUID) ([]domain.Request, error) {
 	requests, err := s.requestRepo.ListNew(ctx)
 	if err != nil {
@@ -45,7 +45,7 @@ func (s *RequestService) ListNew(ctx context.Context, ownerID uuid.UUID) ([]doma
 	return requests, nil
 }
 
-// список всех заявок
+// получение списка всех заявок
 func (s *RequestService) ListAll(ctx context.Context, ownerID uuid.UUID) ([]domain.Request, error) {
 	requests, err := s.requestRepo.List(ctx)
 	if err != nil {
@@ -55,9 +55,12 @@ func (s *RequestService) ListAll(ctx context.Context, ownerID uuid.UUID) ([]doma
 	return requests, nil
 }
 
-// превращение заявки в заказ
-func (s *RequestService) ConvertToOrder(ctx context.Context, ownerID uuid.UUID, input models.CreateOrderFromRequestInput) (*domain.Order, error) {
-	// проверяем, что заявка существует и новая
+// перевод заявки в заказ
+func (s *RequestService) ConvertToOrder(
+	ctx context.Context,
+	ownerID uuid.UUID,
+	input models.CreateOrderFromRequestInput,
+) (*domain.Order, error) {
 	req, err := s.requestRepo.GetByID(ctx, input.RequestID)
 	if err != nil {
 		return nil, fmt.Errorf("error in convert req to order: %w", err)
@@ -91,7 +94,6 @@ func (s *RequestService) ConvertToOrder(ctx context.Context, ownerID uuid.UUID, 
 		return nil, fmt.Errorf("error in convert req to order: %w", err)
 	}
 
-	// помечаем заявку как converted
 	if err := s.requestRepo.MarkConverted(ctx, input.RequestID); err != nil {
 		return nil, fmt.Errorf("error in convert req to order: %w", err)
 	}
@@ -99,7 +101,7 @@ func (s *RequestService) ConvertToOrder(ctx context.Context, ownerID uuid.UUID, 
 	return order, nil
 }
 
-// пометка заявки как отмененной
+// отмена заявки
 func (s *RequestService) Cancel(ctx context.Context, ownerID uuid.UUID, requestID uuid.UUID) error {
 	err := s.requestRepo.MarkCancelled(ctx, requestID)
 	if err != nil {

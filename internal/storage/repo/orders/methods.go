@@ -18,30 +18,18 @@ func (r *OrderRepo) Create(ctx context.Context, o *domain.Order, workerIDs []uui
 	}
 	defer tx.Rollback()
 
-	// создаем заказ
 	query := `
-			INSERT INTO orders (request_id, address, description, estimated_price, planned_date, created_by)
-		 	VALUES ($1, $2, $3, $4, $5, $6)
-			RETURNING id, created_at
-			`
-	err = tx.QueryRowContext(
-		ctx,
-		query,
-		o.RequestID,
-		o.Address,
-		o.Description,
-		o.EstimatedPrice,
-		o.PlannedDate,
-		o.CreatedBy).Scan(&o.ID, &o.CreatedAt)
+		INSERT INTO orders (request_id, address, description, estimated_price, planned_date, created_by)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id, created_at`
+
+	err = tx.QueryRowContext(ctx, query, o.RequestID, o.Address, o.Description, o.EstimatedPrice, o.PlannedDate, o.CreatedBy).
+		Scan(&o.ID, &o.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("error in create order: %w", err)
 	}
 
-	// назначаем исполнителей
-	query = `
-			INSERT INTO order_workers (order_id, worker_id) 
-			VALUES ($1, $2)
-			`
+	query = `INSERT INTO order_workers (order_id, worker_id) VALUES ($1, $2)`
 
 	for _, wid := range workerIDs {
 		if _, err = tx.ExecContext(ctx, query, o.ID, wid); err != nil {
@@ -57,24 +45,20 @@ func (r *OrderRepo) Create(ctx context.Context, o *domain.Order, workerIDs []uui
 	return nil
 }
 
-// возврат заказа по id
+// получение заказа по айди
 func (r *OrderRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.Order, error) {
 	o := &domain.Order{}
 
 	query := `
-			SELECT id, request_id, address, description, estimated_price, planned_date, created_by, created_at, completed_at
-		 	FROM orders
-			WHERE id = $1
-			`
-	err := r.db.DB.QueryRowContext(ctx, query, id).Scan(&o.ID,
-		&o.RequestID,
-		&o.Address,
-		&o.Description,
-		&o.EstimatedPrice,
-		&o.PlannedDate,
-		&o.CreatedBy,
-		&o.CreatedAt,
-		&o.CompletedAt)
+		SELECT o.id, o.request_id, o.address, o.description, o.estimated_price,
+		       o.planned_date, o.created_by, o.created_at, o.completed_at, r.phone
+		FROM orders o
+		LEFT JOIN requests r ON r.id = o.request_id
+		WHERE o.id = $1`
+
+	err := r.db.DB.QueryRowContext(ctx, query, id).
+		Scan(&o.ID, &o.RequestID, &o.Address, &o.Description, &o.EstimatedPrice,
+			&o.PlannedDate, &o.CreatedBy, &o.CreatedAt, &o.CompletedAt, &o.RequestPhone)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -84,16 +68,17 @@ func (r *OrderRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.Order, e
 	return o, nil
 }
 
-// запланированные заказы конкретного исполнителя
+// получение запланированных заказов конкретного исполнителя
 func (r *OrderRepo) ListPlannedByWorker(ctx context.Context, workerID uuid.UUID) ([]domain.Order, error) {
 	query := `
-			SELECT o.id, o.request_id, o.address, o.description, o.estimated_price,
-		        o.planned_date, o.created_by, o.created_at, o.completed_at
-		 	FROM orders o
-		 	JOIN order_workers ow ON ow.order_id = o.id
-		 	WHERE ow.worker_id = $1 AND o.completed_at IS NULL
-		 	ORDER BY o.planned_date
-			`
+		SELECT o.id, o.request_id, o.address, o.description, o.estimated_price,
+		       o.planned_date, o.created_by, o.created_at, o.completed_at, r.phone
+		FROM orders o
+		JOIN order_workers ow ON ow.order_id = o.id
+		LEFT JOIN requests r ON r.id = o.request_id
+		WHERE ow.worker_id = $1 AND o.completed_at IS NULL
+		ORDER BY o.planned_date`
+
 	rows, err := r.db.DB.QueryContext(ctx, query, workerID)
 	if err != nil {
 		return nil, fmt.Errorf("error in list planned orders: %w", err)
@@ -103,15 +88,8 @@ func (r *OrderRepo) ListPlannedByWorker(ctx context.Context, workerID uuid.UUID)
 	orders := make([]domain.Order, 0)
 	for rows.Next() {
 		var o domain.Order
-		if err := rows.Scan(&o.ID,
-			&o.RequestID,
-			&o.Address,
-			&o.Description,
-			&o.EstimatedPrice,
-			&o.PlannedDate,
-			&o.CreatedBy,
-			&o.CreatedAt,
-			&o.CompletedAt); err != nil {
+		if err := rows.Scan(&o.ID, &o.RequestID, &o.Address, &o.Description, &o.EstimatedPrice,
+			&o.PlannedDate, &o.CreatedBy, &o.CreatedAt, &o.CompletedAt, &o.RequestPhone); err != nil {
 			return nil, fmt.Errorf("error in scan order: %w", err)
 		}
 		orders = append(orders, o)
@@ -119,15 +97,16 @@ func (r *OrderRepo) ListPlannedByWorker(ctx context.Context, workerID uuid.UUID)
 	return orders, rows.Err()
 }
 
-// все запланированные заказы (только владелец)
+// получение всех запланированных заказов
 func (r *OrderRepo) ListAllPlanned(ctx context.Context) ([]domain.Order, error) {
 	query := `
-			SELECT id, request_id, address, description, estimated_price,
-		        planned_date, created_by, created_at, completed_at
-		 	FROM orders
-		 	WHERE completed_at IS NULL
-		 	ORDER BY planned_date
-			`
+		SELECT o.id, o.request_id, o.address, o.description, o.estimated_price,
+		       o.planned_date, o.created_by, o.created_at, o.completed_at, r.phone
+		FROM orders o
+		LEFT JOIN requests r ON r.id = o.request_id
+		WHERE o.completed_at IS NULL
+		ORDER BY o.planned_date`
+
 	rows, err := r.db.DB.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("error in list all planned orders: %w", err)
@@ -137,15 +116,8 @@ func (r *OrderRepo) ListAllPlanned(ctx context.Context) ([]domain.Order, error) 
 	orders := make([]domain.Order, 0)
 	for rows.Next() {
 		var o domain.Order
-		if err := rows.Scan(&o.ID,
-			&o.RequestID,
-			&o.Address,
-			&o.Description,
-			&o.EstimatedPrice,
-			&o.PlannedDate,
-			&o.CreatedBy,
-			&o.CreatedAt,
-			&o.CompletedAt); err != nil {
+		if err := rows.Scan(&o.ID, &o.RequestID, &o.Address, &o.Description, &o.EstimatedPrice,
+			&o.PlannedDate, &o.CreatedBy, &o.CreatedAt, &o.CompletedAt, &o.RequestPhone); err != nil {
 			return nil, fmt.Errorf("error in scan order: %w", err)
 		}
 		orders = append(orders, o)
@@ -157,10 +129,10 @@ func (r *OrderRepo) ListAllPlanned(ctx context.Context) ([]domain.Order, error) 
 // завершение заказа
 func (r *OrderRepo) Complete(ctx context.Context, orderID uuid.UUID) error {
 	query := `
-			UPDATE orders 
-			SET completed_at = $1 
-			WHERE id = $2 AND completed_at IS NULL
-			`
+		UPDATE orders 
+		SET completed_at = $1 
+		WHERE id = $2 AND completed_at IS NULL`
+
 	result, err := r.db.DB.ExecContext(ctx, query, time.Now(), orderID)
 	if err != nil {
 		return fmt.Errorf("error in complete order: %w", err)
@@ -168,6 +140,26 @@ func (r *OrderRepo) Complete(ctx context.Context, orderID uuid.UUID) error {
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
 		return fmt.Errorf("error in complete order: order %s not found or already completed", orderID.String())
+	}
+	return nil
+}
+
+// обновление основных полей заказа
+func (r *OrderRepo) Update(ctx context.Context, o *domain.Order) error {
+	query := `
+		UPDATE orders
+		SET address = $1, description = $2, estimated_price = $3, planned_date = $4
+		WHERE id = $5 AND completed_at IS NULL`
+
+	result, err := r.db.DB.ExecContext(ctx, query,
+		o.Address, o.Description, o.EstimatedPrice, o.PlannedDate, o.ID,
+	)
+	if err != nil {
+		return fmt.Errorf("update order: %w", err)
+	}
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return fmt.Errorf("order not found or already completed")
 	}
 	return nil
 }

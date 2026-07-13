@@ -10,9 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// статистика по работнику
+// получение статистики по работнику
 func (s *StatisticsService) ByWorker(ctx context.Context, ownerID, workerID uuid.UUID, from, to string) (*models.WorkerStats, error) {
-	// парсим время периода
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {
 		return nil, fmt.Errorf("error in get stats by worker: %w", err)
@@ -32,9 +31,8 @@ func (s *StatisticsService) ByWorker(ctx context.Context, ownerID, workerID uuid
 	}, nil
 }
 
-// статистика по всем работникам
+// получение статистики по всем работникам
 func (s *StatisticsService) AllWorkers(ctx context.Context, ownerID uuid.UUID, from, to string) ([]models.WorkerStats, error) {
-	// парсим время периода
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {
 		return nil, fmt.Errorf("error in get stats by all: %w", err)
@@ -59,7 +57,7 @@ func (s *StatisticsService) AllWorkers(ctx context.Context, ownerID uuid.UUID, f
 	return result, nil
 }
 
-// общая статистика
+// получение общей статистики
 func (s *StatisticsService) Summary(ctx context.Context, from, to string) (*models.SummaryStats, error) {
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {
@@ -71,24 +69,20 @@ func (s *StatisticsService) Summary(ctx context.Context, from, to string) (*mode
 		return nil, err
 	}
 
-	// Для времени берём уникальные заказы и среднее время на заказ
-	// row.TotalTimeSpent сейчас сумма всех отчётов, нужно пересчитать
 	return &models.SummaryStats{
 		OrdersCount:    row.OrdersCount,
 		TotalEarned:    row.TotalEarned,
-		TotalTimeSpent: row.TotalTimeSpent, // пока сумма, поправим ниже
+		TotalTimeSpent: row.TotalTimeSpent,
 	}, nil
 }
 
 // хэлпер для парсинга времени
 func parsePeriod(from, to string) (time.Time, time.Time, error) {
-	// парсинг времени от
 	fromTime, err := time.Parse("2006-01-02", from)
 	if err != nil {
 		fromTime = time.Time{}
 	}
 
-	// парсинг времени до, если не вышло - то сутки
 	toTime, err := time.Parse("2006-01-02", to)
 	if err != nil {
 		toTime = time.Now().Add(24 * time.Hour)

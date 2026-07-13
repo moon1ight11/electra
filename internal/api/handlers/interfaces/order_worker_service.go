@@ -7,16 +7,15 @@ import (
 	"github.com/google/uuid"
 )
 
-// отчётность исполнителей по заказам
 type OrderWorkerService interface {
-	// обновляет отчёт исполнителя по заказу
+	// обновление отчета исполнителя по заказу
 	UpdateReport(ctx context.Context, workerID uuid.UUID, input models.UpdateReportInput) error
-	// возвращает отчёты всех исполнителей по заказу
+	// получение отчетов всех исполнителей по заказу
 	GetByOrder(ctx context.Context, userID, orderID uuid.UUID) ([]domain.OrderWorker, error)
-	// снимает исполнителя с заказа
+	// удаление исполнителя с заказа
 	RemoveWorker(ctx context.Context, ownerID, orderID, workerID uuid.UUID) error
-	// возвращает историю выполненных заказов исполнителя
+	// получение выполненных заказов исполнителем
 	ListCompletedByWorker(ctx context.Context, workerID uuid.UUID) ([]domain.Order, error)
-	// возвращает все выполненные заказы (владелец)
+	// получение всех выполненных заказов
 	ListAllCompleted(ctx context.Context, ownerID uuid.UUID) ([]domain.Order, error)
 }

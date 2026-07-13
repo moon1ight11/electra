@@ -25,11 +25,14 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	c.SetCookie("cookie", token, 3600, "/", "", false, true)
 
+	h.logger.Info("user logged in succesfully", "user_phone", req.Phone)
+
 	c.JSON(http.StatusOK, gin.H{"message": "logged in"})
 }
 
 // логаут
 func (h *AuthHandler) Logout(c *gin.Context) {
 	c.SetCookie("cookie", "", -1, "/", "", false, true)
+
 	c.JSON(http.StatusOK, gin.H{"message": "logged out"})
 }

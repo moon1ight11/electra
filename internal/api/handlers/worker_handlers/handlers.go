@@ -17,24 +17,32 @@ func (h *WorkerHandler) CreateWorker(c *gin.Context) {
 		return
 	}
 
-	ownerID, err := uuid.Parse(c.GetString("UserId"))
+	ownerID := c.GetString("UserId")
+	if ownerID == "" {
+		h.logger.Error("error in get owner id in create worker")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	ownerUUID, err := uuid.Parse(ownerID)
 	if err != nil {
-		h.logger.Error("error in parce id in stat by worker", "error", err, "owner_id", ownerID)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
+		h.logger.Error("error in parce id in create worker", "error", err, "owner_id", ownerID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
 		return
 	}
 
-	worker, err := h.authService.CreateWorker(c.Request.Context(), ownerID, req.Name, req.Phone, req.Password)
+	worker, err := h.authService.CreateWorker(c.Request.Context(), ownerUUID, req.Name, req.Phone, req.Password, req.Specialization)
 	if err != nil {
-		h.logger.Error("error in service in create worker", "error", err)
+		h.logger.Error("error in services in create worker", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	h.logger.Info("worker created successfully", "worker_id", worker.ID)
+
 	c.JSON(http.StatusCreated, worker)
 }
 
-// список работников
+// получение списка работников
 func (h *WorkerHandler) ListWorkers(c *gin.Context) {
 	workers, err := h.authService.ListWorkers(c.Request.Context())
 	if err != nil {
@@ -44,7 +52,7 @@ func (h *WorkerHandler) ListWorkers(c *gin.Context) {
 	c.JSON(http.StatusOK, workers)
 }
 
-// инфо о текущем пользователе
+// получение информации о текущем пользователе
 func (h *WorkerHandler) GetMe(c *gin.Context) {
 	userIDStr := c.GetString("UserId")
 	if userIDStr == "" {

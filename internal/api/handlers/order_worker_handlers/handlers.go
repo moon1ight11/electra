@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// заполнить/обновить отчёт по заказу
+// заполнение/обновление отчета по заказу
 func (h *OrderWorkerHandler) UpdateReport(c *gin.Context) {
 	var input models.UpdateReportInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -24,16 +24,19 @@ func (h *OrderWorkerHandler) UpdateReport(c *gin.Context) {
 		return
 	}
 
-	if err := h.orderWorkerService.UpdateReport(c.Request.Context(), workerID, input); err != nil {
+	err = h.orderWorkerService.UpdateReport(c.Request.Context(), workerID, input)
+	if err != nil {
 		h.logger.Error("error in service in update report", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	h.logger.Info("report updated successfully", "order_id", input.OrderID)
+
 	c.JSON(http.StatusOK, gin.H{"message": "report updated"})
 }
 
-// отчёты всех исполнителей по заказу
+// получение всех отчетов по заказу
 func (h *OrderWorkerHandler) GetByOrder(c *gin.Context) {
 	orderID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -59,7 +62,45 @@ func (h *OrderWorkerHandler) GetByOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, reports)
 }
 
-// снять исполнителя с заказа
+// получение истории выполненных заказов исполнителя
+func (h *OrderWorkerHandler) ListCompleted(c *gin.Context) {
+	workerID, err := uuid.Parse(c.GetString("UserId"))
+	if err != nil {
+		h.logger.Error("error in parce id in list completed", "error", err, "worker_id", workerID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid worker id"})
+		return
+	}
+
+	orders, err := h.orderWorkerService.ListCompletedByWorker(c.Request.Context(), workerID)
+	if err != nil {
+		h.logger.Error("error in service in list completed", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, orders)
+}
+
+// получение всех выполненных заказов
+func (h *OrderWorkerHandler) ListAllCompleted(c *gin.Context) {
+	ownerID, err := uuid.Parse(c.GetString("UserId"))
+	if err != nil {
+		h.logger.Error("error in parce id in list all completed", "error", err, "owner_id", ownerID)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
+		return
+	}
+
+	orders, err := h.orderWorkerService.ListAllCompleted(c.Request.Context(), ownerID)
+	if err != nil {
+		h.logger.Error("error in service in list all completed", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, orders)
+}
+
+// снятие исполнителя с заказа
 func (h *OrderWorkerHandler) RemoveWorker(c *gin.Context) {
 	orderID, err := uuid.Parse(c.Param("orderId"))
 	if err != nil {
@@ -82,49 +123,14 @@ func (h *OrderWorkerHandler) RemoveWorker(c *gin.Context) {
 		return
 	}
 
-	if err := h.orderWorkerService.RemoveWorker(c.Request.Context(), ownerID, orderID, workerID); err != nil {
+	err = h.orderWorkerService.RemoveWorker(c.Request.Context(), ownerID, orderID, workerID)
+	if err != nil {
 		h.logger.Error("error in service in remowe worker", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	h.logger.Info("worker successfully remowed from order", "order_id", orderID, "worker_id", workerID)
+
 	c.JSON(http.StatusOK, gin.H{"message": "worker removed"})
-}
-
-// история выполненных заказов исполнителя
-func (h *OrderWorkerHandler) ListCompleted(c *gin.Context) {
-	workerID, err := uuid.Parse(c.GetString("UserId"))
-	if err != nil {
-		h.logger.Error("error in parce id in list completed", "error", err, "worker_id", workerID)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid worker id"})
-		return
-	}
-
-	orders, err := h.orderWorkerService.ListCompletedByWorker(c.Request.Context(), workerID)
-	if err != nil {
-		h.logger.Error("error in service in list completed", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, orders)
-}
-
-// все выполненные заказы
-func (h *OrderWorkerHandler) ListAllCompleted(c *gin.Context) {
-	ownerID, err := uuid.Parse(c.GetString("UserId"))
-	if err != nil {
-		h.logger.Error("error in parce id in list all completed", "error", err, "owner_id", ownerID)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
-		return
-	}
-
-	orders, err := h.orderWorkerService.ListAllCompleted(c.Request.Context(), ownerID)
-	if err != nil {
-		h.logger.Error("error in service in list all completed", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, orders)
 }

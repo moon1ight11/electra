@@ -3,28 +3,15 @@ package statistic
 import (
 	"context"
 	"database/sql"
+	"electra/internal/domain"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
 
-type StatsRow struct {
-	WorkerID       uuid.UUID
-	WorkerName     string
-	OrdersCount    int
-	TotalEarned    float64
-	TotalTimeSpent int
-}
-
-type SummaryRow struct {
-	OrdersCount    int
-	TotalEarned    float64
-	TotalTimeSpent int
-}
-
-// статистика по исполнителю за период
-func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from, to time.Time) (*StatsRow, error) {
+// получение статистики по исполнителю
+func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from, to time.Time) (*domain.StatsRow, error) {
 	query := `
 		SELECT w.id, w.name,
 		       COUNT(DISTINCT ow.order_id),
@@ -38,7 +25,7 @@ func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from,
 		  AND o.completed_at <= $3
 		GROUP BY w.id, w.name`
 
-	row := &StatsRow{}
+	row := &domain.StatsRow{}
 	err := r.db.DB.QueryRowContext(ctx, query, workerID, from, to).Scan(
 		&row.WorkerID,
 		&row.WorkerName,
@@ -47,15 +34,15 @@ func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from,
 		&row.TotalTimeSpent)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return &StatsRow{WorkerID: workerID}, nil
+			return &domain.StatsRow{WorkerID: workerID}, nil
 		}
 		return nil, fmt.Errorf("error in stats by worker: %w", err)
 	}
 	return row, nil
 }
 
-// статистика по всем исполнителям за период
-func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]StatsRow, error) {
+// получение статистики по всем исполнителям
+func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]domain.StatsRow, error) {
 	query := `
 		SELECT w.id, w.name,
 		       COUNT(DISTINCT ow.order_id),
@@ -75,9 +62,9 @@ func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]
 	}
 	defer rows.Close()
 
-	stats := make([]StatsRow, 0)
+	stats := make([]domain.StatsRow, 0)
 	for rows.Next() {
-		var s StatsRow
+		var s domain.StatsRow
 		if err := rows.Scan(
 			&s.WorkerID,
 			&s.WorkerName,
@@ -91,8 +78,8 @@ func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]
 	return stats, rows.Err()
 }
 
-// общая статистика
-func (r *StatisticsRepo) SummaryStats(ctx context.Context, from, to time.Time) (*SummaryRow, error) {
+// получение общей статистики
+func (r *StatisticsRepo) SummaryStats(ctx context.Context, from, to time.Time) (*domain.SummaryRow, error) {
 	query := `
 		SELECT
 			COUNT(DISTINCT o.id),
@@ -102,14 +89,14 @@ func (r *StatisticsRepo) SummaryStats(ctx context.Context, from, to time.Time) (
 		LEFT JOIN order_workers ow ON ow.order_id = o.id
 		WHERE o.completed_at >= $1 AND o.completed_at <= $2`
 
-	row := &SummaryRow{}
+	row := &domain.SummaryRow{}
 	err := r.db.DB.QueryRowContext(ctx, query, from, to).
 		Scan(&row.OrdersCount, &row.TotalEarned, &row.TotalTimeSpent)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return &SummaryRow{}, nil
+			return &domain.SummaryRow{}, nil
 		}
-		return nil, fmt.Errorf("summary stats: %w", err)
+		return nil, fmt.Errorf("error in summary stats: %w", err)
 	}
 	return row, nil
 }

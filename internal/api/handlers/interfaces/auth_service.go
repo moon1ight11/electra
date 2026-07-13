@@ -6,19 +6,13 @@ import (
 	"github.com/google/uuid"
 )
 
-type WorkerInfo struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-}
-
-// аутентификация и управление пользователями
 type AuthService interface {
-	// проверяет телефон и пароль, возвращает токен
+	// проверка телефона и пароля и возврат токена
 	Login(ctx context.Context, phone, password string) (string, error)
-	// создаёт нового исполнителя (только владелец)
-	CreateWorker(ctx context.Context, ownerID uuid.UUID, name, phone, password string) (*domain.Worker, error)
-	// получает список работников
-	ListWorkers(ctx context.Context) ([]WorkerInfo, error)
-	// получает информацию обо мне
-	GetMe(ctx context.Context, userID uuid.UUID) (*WorkerInfo, error)
+	// создание нового исполнителя
+	CreateWorker(ctx context.Context, ownerID uuid.UUID, name, phone, password, specialization string) (*domain.Worker, error)
+	// получение списка работников
+	ListWorkers(ctx context.Context) ([]domain.WorkerInfo, error)
+	// получение информации о пользователе
+	GetMe(ctx context.Context, userID uuid.UUID) (*domain.WorkerInfo, error)
 }

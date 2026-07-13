@@ -36,22 +36,40 @@ func (s *OrderWorkerService) UpdateReport(ctx context.Context, workerID uuid.UUI
 
 // получение отчета из заказа
 func (s *OrderWorkerService) GetByOrder(ctx context.Context, userID, orderID uuid.UUID) ([]domain.OrderWorker, error) {
-	// Если пользователь назначен на заказ — показываем
 	ow, _ := s.orderWorkerRepo.GetByOrderAndWorker(ctx, orderID, userID)
 	if ow != nil {
 		return s.orderWorkerRepo.GetByOrder(ctx, orderID)
 	}
 
-	// Если не назначен — проверяем, может это владелец
 	worker, err := s.workerRepo.GetByID(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("get user: %w", err)
+		return nil, fmt.Errorf("error in get user: %w", err)
 	}
 	if worker != nil && worker.Role == domain.RoleOwner {
 		return s.orderWorkerRepo.GetByOrder(ctx, orderID)
 	}
 
 	return nil, errors.New("access denied: not assigned to this order")
+}
+
+// получение списка выполненных работ исполнителя
+func (s *OrderWorkerService) ListCompletedByWorker(ctx context.Context, workerID uuid.UUID) ([]domain.Order, error) {
+	orders, err := s.orderWorkerRepo.ListCompletedByWorker(ctx, workerID)
+	if err != nil {
+		return nil, fmt.Errorf("error in list completed by worker: %w", err)
+	}
+
+	return orders, nil
+}
+
+// получение списка всех выполненных работ
+func (s *OrderWorkerService) ListAllCompleted(ctx context.Context, ownerID uuid.UUID) ([]domain.Order, error) {
+	orders, err := s.orderWorkerRepo.ListAllCompleted(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error in list all completed: %w", err)
+	}
+
+	return orders, nil
 }
 
 // удаление работника из заказа
@@ -62,24 +80,4 @@ func (s *OrderWorkerService) RemoveWorker(ctx context.Context, ownerID, orderID,
 	}
 
 	return nil
-}
-
-// список выполненного работником
-func (s *OrderWorkerService) ListCompletedByWorker(ctx context.Context, workerID uuid.UUID) ([]domain.Order, error) {
-	orders, err := s.orderWorkerRepo.ListCompletedByWorker(ctx, workerID)
-	if err != nil {
-		return nil, fmt.Errorf("error in list completed by worker: %w", err)
-	}
-
-	return orders, nil
-}
-
-// список выполненного всего
-func (s *OrderWorkerService) ListAllCompleted(ctx context.Context, ownerID uuid.UUID) ([]domain.Order, error) {
-	orders, err := s.orderWorkerRepo.ListAllCompleted(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("error in list all completed: %w", err)
-	}
-
-	return orders, nil
 }

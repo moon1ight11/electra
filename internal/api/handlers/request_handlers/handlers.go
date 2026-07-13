@@ -24,48 +24,12 @@ func (h *RequestHandler) CreateRequest(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("request succesfully created from landing", "req_id", request.ID)
+
 	c.JSON(http.StatusCreated, request)
 }
 
-// список новых заявок
-func (h *RequestHandler) ListNewRequests(c *gin.Context) {
-	ownerID, err := uuid.Parse(c.GetString("UserId"))
-	if err != nil {
-		h.logger.Error("error in parce id in list new requests", "error", err, "owner_id", ownerID)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
-		return
-	}
-
-	requests, err := h.requestService.ListNew(c.Request.Context(), ownerID)
-	if err != nil {
-		h.logger.Error("error in service in list new requests", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, requests)
-}
-
-// все заявки
-func (h *RequestHandler) ListAllRequests(c *gin.Context) {
-	ownerID, err := uuid.Parse(c.GetString("UserId"))
-	if err != nil {
-		h.logger.Error("error in parce id in list all requests", "error", err, "owner_id", ownerID)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
-		return
-	}
-
-	requests, err := h.requestService.ListAll(c.Request.Context(), ownerID)
-	if err != nil {
-		h.logger.Error("error in service in list new requests", "error", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, requests)
-}
-
-// создать заказ из заявки
+// создание заказа из заявки
 func (h *RequestHandler) ConvertToOrder(c *gin.Context) {
 	var input models.CreateOrderFromRequestInput
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -88,7 +52,47 @@ func (h *RequestHandler) ConvertToOrder(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("order succesfully created from request", "order_id", order.ID, "req_id", input.RequestID)
+
 	c.JSON(http.StatusCreated, order)
+}
+
+// получение списка новых заявок
+func (h *RequestHandler) ListNewRequests(c *gin.Context) {
+	ownerID, err := uuid.Parse(c.GetString("UserId"))
+	if err != nil {
+		h.logger.Error("error in parce id in list new requests", "error", err, "owner_id", ownerID)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
+		return
+	}
+
+	requests, err := h.requestService.ListNew(c.Request.Context(), ownerID)
+	if err != nil {
+		h.logger.Error("error in service in list new requests", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, requests)
+}
+
+// получение списка всех заявок
+func (h *RequestHandler) ListAllRequests(c *gin.Context) {
+	ownerID, err := uuid.Parse(c.GetString("UserId"))
+	if err != nil {
+		h.logger.Error("error in parce id in list all requests", "error", err, "owner_id", ownerID)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid owner Id"})
+		return
+	}
+
+	requests, err := h.requestService.ListAll(c.Request.Context(), ownerID)
+	if err != nil {
+		h.logger.Error("error in service in list new requests", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, requests)
 }
 
 // отмена заявки
@@ -107,11 +111,14 @@ func (h *RequestHandler) CancelRequest(c *gin.Context) {
 		return
 	}
 
-	if err := h.requestService.Cancel(c.Request.Context(), ownerID, requestID); err != nil {
+	err = h.requestService.Cancel(c.Request.Context(), ownerID, requestID)
+	if err != nil {
 		h.logger.Error("error in service in cancel request", "error", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	h.logger.Info("request cancelled successfully", "req_id", requestID)
 
 	c.JSON(http.StatusOK, gin.H{"message": "request cancelled"})
 }

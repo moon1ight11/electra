@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// статистика по конкретному исполнителю
+// получение статистики по конкретному исполнителю
 func (h *StatisticsHandler) ByWorker(c *gin.Context) {
 	workerID, err := uuid.Parse(c.Param("workerId"))
 	if err != nil {
@@ -36,7 +36,7 @@ func (h *StatisticsHandler) ByWorker(c *gin.Context) {
 	c.JSON(http.StatusOK, stats)
 }
 
-// статистика по всем
+// получение статистики по всем исполнителям
 func (h *StatisticsHandler) AllWorkers(c *gin.Context) {
 	from := c.Query("from")
 	to := c.Query("to")
@@ -58,7 +58,7 @@ func (h *StatisticsHandler) AllWorkers(c *gin.Context) {
 	c.JSON(http.StatusOK, stats)
 }
 
-// общая статистика
+// получение общей статистики
 func (h *StatisticsHandler) Summary(c *gin.Context) {
 	from := c.Query("from")
 	to := c.Query("to")

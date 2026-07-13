@@ -30,10 +30,12 @@ func (h *OrderHandler) CreateDirect(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("order created", "order_id", order.ID)
+
 	c.JSON(http.StatusCreated, order)
 }
 
-// запланированные заказы текущего исполнителя
+// получение запланированных заказов текущего исполнителя
 func (h *OrderHandler) ListPlanned(c *gin.Context) {
 	workerID, err := uuid.Parse(c.GetString("UserId"))
 	if err != nil {
@@ -52,7 +54,7 @@ func (h *OrderHandler) ListPlanned(c *gin.Context) {
 	c.JSON(http.StatusOK, orders)
 }
 
-// все запланированные заказы
+// получение всех запланированных заказов
 func (h *OrderHandler) ListAllPlanned(c *gin.Context) {
 	ownerID, err := uuid.Parse(c.GetString("UserId"))
 	if err != nil {
@@ -71,7 +73,7 @@ func (h *OrderHandler) ListAllPlanned(c *gin.Context) {
 	c.JSON(http.StatusOK, orders)
 }
 
-// завершить заказ
+// завершение заказа
 func (h *OrderHandler) Complete(c *gin.Context) {
 	orderID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -93,6 +95,8 @@ func (h *OrderHandler) Complete(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("order completed", "order_id", orderID)
+
 	c.JSON(http.StatusOK, gin.H{"message": "order completed"})
 }
 
@@ -100,14 +104,40 @@ func (h *OrderHandler) Complete(c *gin.Context) {
 func (h *OrderHandler) CompleteByOwner(c *gin.Context) {
 	orderID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		h.logger.Error("error in parce id in order complete by owner", "error", err, "order_id", orderID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid order id"})
 		return
 	}
 
-	if err := h.orderService.CompleteByOwner(c.Request.Context(), orderID); err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+	err = h.orderService.CompleteByOwner(c.Request.Context(), orderID)
+	if err != nil {
+		h.logger.Error("error in service in order complete by owner", "error", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	h.logger.Info("order completed by owner", "order_id", orderID)
+
 	c.JSON(http.StatusOK, gin.H{"message": "order completed"})
+}
+
+// обновление полей заказа
+func (h *OrderHandler) Update(c *gin.Context) {
+	var input models.UpdateOrderInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		h.logger.Error("error in sbjson in update order", "error", err, "order_id", input.ID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+		return
+	}
+
+	order, err := h.orderService.Update(c.Request.Context(), input)
+	if err != nil {
+		h.logger.Error("error in service in update order", "error", err, "order_id", input.ID)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	h.logger.Info("order updated successfully", "order_id", input.ID)
+
+	c.JSON(http.StatusOK, order)
 }

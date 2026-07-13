@@ -8,16 +8,15 @@ import (
 	"github.com/google/uuid"
 )
 
-// работа с заявками от клиентов
 type RequestService interface {
-	// создаёт заявку с сайта (публично)
+	// создание заявки
 	Create(ctx context.Context, name, phone, comment string) (*domain.Request, error)
-	// возвращает новые (необработанные) заявки
+	// получение новых заявок
 	ListNew(ctx context.Context, ownerID uuid.UUID) ([]domain.Request, error)
-	// возвращает все заявки
+	// получение всех заявок
 	ListAll(ctx context.Context, ownerID uuid.UUID) ([]domain.Request, error)
-	// помечает заявку как converted и создаёт заказ
+	// пометка заявки как обработанной
 	ConvertToOrder(ctx context.Context, ownerID uuid.UUID, input models.CreateOrderFromRequestInput) (*domain.Order, error)
-	// помечает заявку как отменённую
+	// пометка заявки как отмененной
 	Cancel(ctx context.Context, ownerID uuid.UUID, requestID uuid.UUID) error
 }

@@ -42,7 +42,7 @@ func (r *RequestRepo) GetByID(ctx context.Context, id uuid.UUID) (*domain.Reques
 	return req, nil
 }
 
-// все заявки от новых к старым
+// получение всех заявок
 func (r *RequestRepo) List(ctx context.Context) ([]domain.Request, error) {
 	query := `
 			SELECT id, name, phone, comment, status, created_at
@@ -66,7 +66,7 @@ func (r *RequestRepo) List(ctx context.Context) ([]domain.Request, error) {
 	return requests, rows.Err()
 }
 
-// только новые заявки
+// получение новых заявок
 func (r *RequestRepo) ListNew(ctx context.Context) ([]domain.Request, error) {
 	query := `
 			SELECT id, name, phone, comment, status, created_at
@@ -91,7 +91,7 @@ func (r *RequestRepo) ListNew(ctx context.Context) ([]domain.Request, error) {
 	return requests, rows.Err()
 }
 
-// пометить заявку как преобразованную в заказ
+// пометка заявки как обработанной
 func (r *RequestRepo) MarkConverted(ctx context.Context, id uuid.UUID) error {
 	query := `
 			UPDATE requests
@@ -111,7 +111,7 @@ func (r *RequestRepo) MarkConverted(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-// пометить заявку как отменённую (клиент отказался)
+// пометка заявки как отмененной
 func (r *RequestRepo) MarkCancelled(ctx context.Context, id uuid.UUID) error {
 	query := `
 			UPDATE requests
@@ -127,6 +127,6 @@ func (r *RequestRepo) MarkCancelled(ctx context.Context, id uuid.UUID) error {
 	if rows == 0 {
 		return fmt.Errorf("request %s not found or not in 'new' status", id.String())
 	}
-	
+
 	return nil
 }

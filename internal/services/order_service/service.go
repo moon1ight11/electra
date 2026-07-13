@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// создать заказ
+// создание заказа
 func (s *OrderService) CreateDirect(ctx context.Context, ownerID uuid.UUID, input models.CreateOrderDirectInput) (*domain.Order, error) {
 	var plannedDate *time.Time
 	if input.PlannedDate != "" {
@@ -37,7 +37,7 @@ func (s *OrderService) CreateDirect(ctx context.Context, ownerID uuid.UUID, inpu
 	return order, nil
 }
 
-// запланированные заказы работника
+// получение списка запланированных работ исполнителя
 func (s *OrderService) ListPlannedByWorker(ctx context.Context, workerID uuid.UUID) ([]domain.Order, error) {
 	orders, err := s.orderRepo.ListPlannedByWorker(ctx, workerID)
 	if err != nil {
@@ -47,7 +47,7 @@ func (s *OrderService) ListPlannedByWorker(ctx context.Context, workerID uuid.UU
 	return orders, nil
 }
 
-// все запланированные заказы
+// получение списка всех запланированных заказов
 func (s *OrderService) ListAllPlanned(ctx context.Context, ownerID uuid.UUID) ([]domain.Order, error) {
 	orders, err := s.orderRepo.ListAllPlanned(ctx)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *OrderService) ListAllPlanned(ctx context.Context, ownerID uuid.UUID) ([
 	return orders, nil
 }
 
-// пометка выполнено
+// завершение заказа
 func (s *OrderService) Complete(ctx context.Context, workerID, orderID uuid.UUID) error {
 	// проверяем, что исполнитель назначен на этот заказ
 	ow, err := s.orderWorkerRepo.GetByOrderAndWorker(ctx, orderID, workerID)
@@ -92,7 +92,7 @@ func (s *OrderService) Complete(ctx context.Context, workerID, orderID uuid.UUID
 func (s *OrderService) CompleteByOwner(ctx context.Context, orderID uuid.UUID) error {
 	order, err := s.orderRepo.GetByID(ctx, orderID)
 	if err != nil {
-		return fmt.Errorf("get order: %w", err)
+		return fmt.Errorf("error in get order: %w", err)
 	}
 	if order == nil {
 		return errors.New("order not found")
@@ -101,5 +101,44 @@ func (s *OrderService) CompleteByOwner(ctx context.Context, orderID uuid.UUID) e
 		return errors.New("order already completed")
 	}
 
-	return s.orderRepo.Complete(ctx, orderID)
+	err = s.orderRepo.Complete(ctx, orderID)
+	if err != nil {
+		return fmt.Errorf("error in complete order: %w", err)
+	}
+
+	return nil
+}
+
+// обновление полей заказа
+func (s *OrderService) Update(ctx context.Context, input models.UpdateOrderInput) (*domain.Order, error) {
+	order, err := s.orderRepo.GetByID(ctx, input.ID)
+	if err != nil {
+		return nil, fmt.Errorf("error in get order: %w", err)
+	}
+	if order == nil {
+		return nil, errors.New("order not found")
+	}
+	if order.CompletedAt != nil {
+		return nil, errors.New("cannot edit completed order")
+	}
+
+	var plannedDate *time.Time
+	if input.PlannedDate != "" {
+		t, err := time.Parse("2006-01-02", input.PlannedDate)
+		if err != nil {
+			return nil, fmt.Errorf("invalid planned_date format: %w", err)
+		}
+		plannedDate = &t
+	}
+
+	order.Address = input.Address
+	order.Description = &input.Description
+	order.EstimatedPrice = input.EstimatedPrice
+	order.PlannedDate = plannedDate
+
+	if err := s.orderRepo.Update(ctx, order); err != nil {
+		return nil, fmt.Errorf("error in update order: %w", err)
+	}
+
+	return order, nil
 }

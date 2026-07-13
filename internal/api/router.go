@@ -44,21 +44,21 @@ func NewRouter(
 }
 
 func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger) {
-	// MIDDLEWARE для CORS
+	// мидлвары для корсов
 	r.ginEngine.Use(middlewares.CORS())
 
 	// группировка роутов
+	publicGroup := r.ginEngine.Group("/api/v1/public")
 	authGroup := r.ginEngine.Group("/api/v1/auth")
 	workerGroup := r.ginEngine.Group("/api/v1/worker")
 	ownerGroup := r.ginEngine.Group("/api/v1/owner")
 
-	// Middleware
+	// мидлвары для аутентификации
 	workerGroup.Use(middlewares.Auth(jwtService, logger))
 	ownerGroup.Use(middlewares.Auth(jwtService, logger))
 	ownerGroup.Use(middlewares.AuthOwner(logger))
 
-	// АУТЕНТИФИКАЦИЯ //
-	// LOGIN
+	// АУТЕНТИФИКАЦИЯ // --- только для созданных пользователей
 	authGroup.POST("/login", r.authHandler.Login)
 
 	// РАБОТНИК // --- только для работников
@@ -82,13 +82,13 @@ func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger) {
 	ownerGroup.PATCH("/orders/:id/complete", r.orderHandler.CompleteByOwner)
 	ownerGroup.GET("/orders/history", r.orderWorkerHandler.ListAllCompleted)
 	ownerGroup.DELETE("/orders/:orderId/workers/:workerId", r.orderWorkerHandler.RemoveWorker)
+	ownerGroup.PATCH("/orders/edit", r.orderHandler.Update)
 	ownerGroup.GET("/statistics/workers/:workerId", r.statisticsHandler.ByWorker)
 	ownerGroup.GET("/statistics/all", r.statisticsHandler.AllWorkers)
 	ownerGroup.GET("/statistics/summary", r.statisticsHandler.Summary)
-	
 
-	// Публичная заявка с сайта
-	r.ginEngine.POST("/api/v1/public/requests", r.requestHandler.CreateRequest)
+	// ПУБЛИЧНОЕ // ---
+	publicGroup.POST("/requests", r.requestHandler.CreateRequest)
 }
 
 func (r *Router) GetEngine() *gin.Engine {

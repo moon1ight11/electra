@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TYPE request_status AS ENUM ('new', 'converted', 'cancelled');
+CREATE TYPE request_status AS ENUM('new', 'converted', 'cancelled');
 
 CREATE TABLE
     requests (
@@ -13,4 +13,5 @@ CREATE TABLE
 
 -- +goose Down
 DROP TABLE IF EXISTS requests;
+
 DROP TYPE IF EXISTS request_status;

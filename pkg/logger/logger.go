@@ -13,7 +13,6 @@ type appLogger struct {
 	*slog.Logger
 }
 
-// New создает новый экземпляр логгера
 func NewLogger(cfg config.Config) (Logger, error) {
 	var level slog.Level
 	switch cfg.Logger.Level {

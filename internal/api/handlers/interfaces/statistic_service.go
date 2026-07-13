@@ -6,12 +6,11 @@ import (
 	"github.com/google/uuid"
 )
 
-// статистика для владельца
 type StatisticsService interface {
-	// возвращает статистику по исполнителю за период
+	// статистика по работнику за период
 	ByWorker(ctx context.Context, ownerID, workerID uuid.UUID, from, to string) (*models.WorkerStats, error)
-	// возвращает общую статистику по всем исполнителям за период
+	// общая статистика по всем работникам за период
 	AllWorkers(ctx context.Context, ownerID uuid.UUID, from, to string) ([]models.WorkerStats, error)
-	// общая статистика по конторе
+	// общая статистика по всей компании
 	Summary(ctx context.Context, from, to string) (*models.SummaryStats, error)
 }

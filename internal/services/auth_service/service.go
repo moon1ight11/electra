@@ -2,7 +2,6 @@ package authservice
 
 import (
 	"context"
-	"electra/internal/api/handlers/interfaces"
 	"electra/internal/domain"
 	"errors"
 	"fmt"
@@ -13,6 +12,51 @@ import (
 )
 
 var nonDigits = regexp.MustCompile(`\D`)
+
+// создание работника
+func (s *AuthService) CreateWorker(ctx context.Context, ownerID uuid.UUID, name, phone, password, specialization string) (*domain.Worker, error) {
+	owner, err := s.workerRepo.GetByID(ctx, ownerID)
+	if err != nil {
+		return nil, fmt.Errorf("error in get owner: %w", err)
+	}
+	if owner == nil || owner.Role != domain.RoleOwner {
+		return nil, errors.New("only owner can create workers")
+	}
+
+	cleaned := nonDigits.ReplaceAllString(phone, "")
+	if len(cleaned) == 0 {
+		return nil, errors.New("phone must contain at least one digit")
+	}
+
+	existing, _ := s.workerRepo.GetByPhone(ctx, cleaned)
+	if existing != nil {
+		return nil, errors.New("worker with this phone already exists")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, fmt.Errorf("error in hash password: %w", err)
+	}
+
+	var spec *string
+	if specialization != "" {
+		spec = &specialization
+	}
+
+	worker := &domain.Worker{
+		Name:           name,
+		Phone:          &cleaned,
+		Role:           domain.RoleWorker,
+		PasswordHash:   string(hash),
+		Specialization: spec,
+	}
+
+	if err := s.workerRepo.Create(ctx, worker); err != nil {
+		return nil, fmt.Errorf("error in create worker: %w", err)
+	}
+
+	return worker, nil
+}
 
 // логин
 func (s *AuthService) Login(ctx context.Context, phone, password string) (string, error) {
@@ -42,77 +86,39 @@ func (s *AuthService) Login(ctx context.Context, phone, password string) (string
 	return token, nil
 }
 
-// создание работника
-func (s *AuthService) CreateWorker(ctx context.Context, ownerID uuid.UUID, name, phone, password string) (*domain.Worker, error) {
-	// проверяем, что создаёт владелец
-	owner, err := s.workerRepo.GetByID(ctx, ownerID)
-	if err != nil {
-		return nil, fmt.Errorf("error in get owner: %w", err)
-	}
-	if owner == nil || owner.Role != domain.RoleOwner {
-		return nil, errors.New("error in create worker: only owner can create workers")
-	}
-
-	// чистим телефон
-	cleaned := nonDigits.ReplaceAllString(phone, "")
-	if len(cleaned) == 0 {
-		return nil, errors.New("phone must contain at least one digit")
-	}
-
-	// проверяем, нет ли уже такого телефона
-	existing, _ := s.workerRepo.GetByPhone(ctx, cleaned)
-	if existing != nil {
-		return nil, errors.New("error: worker with this phone already exists")
-	}
-
-	// хешируем пароль
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, fmt.Errorf("error in hash password: %w", err)
-	}
-
-	worker := &domain.Worker{
-		Name:         name,
-		Phone:        &cleaned,
-		Role:         domain.RoleWorker,
-		PasswordHash: string(hash),
-	}
-
-	if err := s.workerRepo.Create(ctx, worker); err != nil {
-		return nil, fmt.Errorf("error in create worker: %w", err)
-	}
-
-	return worker, nil
-}
-
-// список работников
-func (s *AuthService) ListWorkers(ctx context.Context) ([]interfaces.WorkerInfo, error) {
+// получение списка работников
+func (s *AuthService) ListWorkers(ctx context.Context) ([]domain.WorkerInfo, error) {
 	workers, err := s.workerRepo.List(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("list workers: %w", err)
+		return nil, fmt.Errorf("error in list workers: %w", err)
 	}
 
-	result := make([]interfaces.WorkerInfo, len(workers))
+	result := make([]domain.WorkerInfo, len(workers))
 	for i, w := range workers {
-		result[i] = interfaces.WorkerInfo{
-			ID:   w.ID,
-			Name: w.Name,
+		spec := ""
+		if w.Specialization != nil {
+			spec = *w.Specialization
+		}
+		result[i] = domain.WorkerInfo{
+			ID:             w.ID,
+			Name:           w.Name,
+			Specialization: spec,
 		}
 	}
 	return result, nil
 }
 
-// инфо о текущем пользователе.
-func (s *AuthService) GetMe(ctx context.Context, userID uuid.UUID) (*interfaces.WorkerInfo, error) {
+// получение информации о текущем пользователе
+func (s *AuthService) GetMe(ctx context.Context, userID uuid.UUID) (*domain.WorkerInfo, error) {
 	worker, err := s.workerRepo.GetByID(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("get me: %w", err)
+		return nil, fmt.Errorf("error in get me: %w", err)
 	}
 	if worker == nil {
 		return nil, errors.New("worker not found")
 	}
 
-	return &interfaces.WorkerInfo{
+	return &domain.WorkerInfo{
 		ID:   worker.ID,
 		Name: worker.Name,
 	}, nil
