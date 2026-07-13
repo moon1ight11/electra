@@ -49,20 +49,6 @@
   margin-bottom: 16px;
 }
 
-/* Сводка */
-.summaryNumber {
-  font-size: 24px;
-  font-weight: 700;
-  color: #3D4A3E;
-}
-
-.summaryLabel {
-  font-size: 13px;
-  color: #8B8270;
-  font-weight: 500;
-}
-
-/* Топ-лист */
 .list {
   display: flex;
   flex-direction: column;
@@ -156,7 +142,6 @@
   flex-shrink: 0;
 }
 
-/* Модалка */
 .overlay {
   position: fixed;
   inset: 0;
@@ -235,4 +220,20 @@
 .cancelBtn {
   background: #F0ECE0;
   color: #6B6355;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.specialization {
+  font-size: 12px;
+  color: #8B8270;
+  background: #F0ECE0;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 600;
 }

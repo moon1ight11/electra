@@ -130,6 +130,12 @@ export default function OrderDetail() {
           <span className={styles.label}>Стоимость</span>
           <span className={styles.price}>{order.estimated_price ? order.estimated_price.toLocaleString() + ' ₽' : '—'}</span>
         </div>
+        {order.request_phone && (
+          <div className={styles.infoItem}>
+            <span className={styles.label}>Заявка от</span>
+            <span>{order.request_phone}</span>
+          </div>
+        )}
       </div>
 
       <h2 className={styles.sectionTitle}>Исполнители</h2>

@@ -56,7 +56,6 @@
   border-color: rgba(252, 250, 246, 0.3);
 }
 
-/* Бургер */
 .burger {
   display: none;
   flex-direction: column;
@@ -97,13 +96,7 @@
     font-size: 12px;
     padding: 6px 12px;
   }
-}
 
-.logoImg {
-  height: 30px;
-}
-
-@media (max-width: 768px) {
   .logoImg {
     height: 22px;
     position: absolute;

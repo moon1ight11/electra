@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createWorker } from '../../api/workers';
+import { usePhoneMask } from '../../hooks/usePhoneMask';
 import Skeleton from '../../components/Skeleton/Skeleton';
 import styles from './Workers.module.css';
 
@@ -13,8 +14,9 @@ export default function Workers() {
 
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const phone = usePhoneMask();
   const [password, setPassword] = useState('');
+  const [specialization, setSpecialization] = useState('');
 
   const loadWorkers = useCallback(async () => {
     try {
@@ -33,6 +35,7 @@ export default function Workers() {
         return {
           id: w.id,
           name: w.name,
+          specialization: w.specialization || '',
           ordersCount: stat ? stat.orders_count : 0,
           totalEarned: stat ? stat.total_earned : 0,
           totalTimeSpent: stat ? stat.total_time_spent : 0,
@@ -56,12 +59,13 @@ export default function Workers() {
     e.preventDefault();
     setMsg('');
     try {
-      await createWorker(name, phone, password);
+      await createWorker(name, phone.value, password, specialization);
       setMsg('Исполнитель создан');
       setShowForm(false);
       setName('');
-      setPhone('');
+      phone.reset();
       setPassword('');
+      setSpecialization('');
       loadWorkers();
     } catch (err) {
       setMsg('Ошибка: ' + err.message);
@@ -93,7 +97,12 @@ export default function Workers() {
               </span>
             </div>
             <div className={styles.cardBody}>
-              <span className={styles.workerName}>{w.name}</span>
+              <div className={styles.nameRow}>
+                <span className={styles.workerName}>{w.name}</span>
+                {w.specialization && (
+                  <span className={styles.specialization}>{w.specialization}</span>
+                )}
+              </div>
               <div className={styles.stats}>
                 <span>{w.ordersCount} заказов</span>
                 <span>·</span>
@@ -117,11 +126,21 @@ export default function Workers() {
             </label>
             <label>
               Телефон
-              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+              <input
+                type="tel"
+                value={phone.value}
+                onChange={phone.onChange}
+                placeholder="+7 (___) ___-__-__"
+                required
+              />
             </label>
             <label>
               Пароль
               <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </label>
+            <label>
+              Специализация
+              <input type="text" value={specialization} onChange={(e) => setSpecialization(e.target.value)} placeholder="Электрик, отделочник..." />
             </label>
             <div className={styles.formActions}>
               <button type="submit" className={styles.submitBtn}>Создать</button>

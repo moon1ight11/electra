@@ -1,9 +1,27 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const meRes = await fetch('/api/v1/worker/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          const ownerCheck = await fetch('/api/v1/owner/requests/new');
+          const role = ownerCheck.ok ? 'owner' : 'worker';
+          setUser({ id: me.id, name: me.name, role });
+        }
+      } catch { }
+      setLoading(false);
+    };
+
+    restoreSession();
+  }, []);
 
   const login = (id, name, role) => setUser({ id, name, role });
 
@@ -13,7 +31,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

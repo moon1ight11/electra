@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { loginRequest } from '../../api/auth';
+import { usePhoneMask } from '../../hooks/usePhoneMask';
 import styles from './Login.module.css';
 
 export default function Login() {
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const phone = usePhoneMask();
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -15,7 +16,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
     try {
-      await loginRequest(phone, password);
+      await loginRequest(phone.value, password);
 
       const [ownerCheck, meRes] = await Promise.all([
         fetch('/api/v1/owner/requests/new'),
@@ -41,10 +42,10 @@ export default function Login() {
         <label>
           Телефон
           <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="79991234567"
+            type="tel"
+            value={phone.value}
+            onChange={phone.onChange}
+            placeholder="+7 (___) ___-__-__"
             required
           />
         </label>

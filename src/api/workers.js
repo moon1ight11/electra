@@ -8,12 +8,12 @@ export async function fetchWorkers() {
   return res.json();
 }
 
-export async function createWorker(name, phone, password) {
+export async function createWorker(name, phone, password, specialization) {
   const res = await fetch(`${BASE}/owner/workers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ name, phone, password }),
+    body: JSON.stringify({ name, phone, password, specialization }),
   });
   if (!res.ok) {
     const err = await res.json();

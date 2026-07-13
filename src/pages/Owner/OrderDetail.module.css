@@ -54,7 +54,7 @@
   background: #FCFAF6;
   padding: 20px 24px;
   border-radius: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   border: 1px solid rgba(184, 115, 51, 0.06);
 }
 
@@ -74,10 +74,22 @@
   color: #B87333;
 }
 
-.requestId {
-  font-size: 13px;
-  color: #8B8270;
-  font-family: monospace;
+.editBtn {
+  padding: 10px 22px;
+  background: #F0ECE0;
+  color: #3D4A3E;
+  border: 1px solid #DDD6C8;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+}
+
+.editBtn:hover {
+  background: #E5DFCF;
 }
 
 .sectionTitle {
@@ -148,8 +160,21 @@
   color: #8B8270;
 }
 
-/* Форма отчёта */
-.form {
+.success {
+  color: #3D4A3E;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.error {
+  color: #B84530;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.reportForm {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -162,6 +187,7 @@
   gap: 14px;
 }
 
+.reportForm label,
 .form label {
   display: flex;
   flex-direction: column;
@@ -171,6 +197,8 @@
   color: #5C5545;
 }
 
+.reportForm input,
+.reportForm textarea,
 .form input,
 .form textarea {
   padding: 12px 16px;
@@ -182,6 +210,8 @@
   font-family: 'Nunito', sans-serif;
 }
 
+.reportForm input:focus,
+.reportForm textarea:focus,
 .form input:focus,
 .form textarea:focus {
   border-color: #D4A030;
@@ -207,18 +237,7 @@
 .saveBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.success {
-  color: #3D4A3E;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.error {
-  color: #B84530;
-  font-weight: 600;
-  font-size: 14px;
+  transform: none;
 }
 
 .completeBtn {
@@ -245,6 +264,53 @@
   transform: none;
 }
 
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.form {
+  background: #FCFAF6;
+  padding: 32px 28px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 40px rgba(44, 36, 22, 0.12);
+}
+
+.form h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 4px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.cancelBtn {
+  padding: 12px 24px;
+  background: #F0ECE0;
+  color: #6B6355;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .page {
     padding: 0;
@@ -252,9 +318,5 @@
 
   .formRow {
     grid-template-columns: 1fr;
-  }
-
-  .formActions {
-    flex-direction: column;
   }
 }

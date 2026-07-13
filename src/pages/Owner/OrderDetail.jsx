@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchAllPlannedOrders } from '../../api/orders';
 import { fetchReports, updateReport } from '../../api/reports';
 import styles from './OrderDetail.module.css';
-import Skeleton from '../../components/Skeleton/Skeleton';
 
 const BASE = '/api/v1';
 
@@ -21,11 +20,20 @@ export default function OrderDetail() {
   const [removing, setRemoving] = useState(false);
   const [completing, setCompleting] = useState(false);
 
+  // Отчёт
   const [timeSpent, setTimeSpent] = useState('');
   const [earnedAmount, setEarnedAmount] = useState('');
   const [materials, setMaterials] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
+
+  // Редактирование заказа
+  const [editMode, setEditMode] = useState(false);
+  const [editAddress, setEditAddress] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editEstimatedPrice, setEditEstimatedPrice] = useState('');
+  const [editPlannedDate, setEditPlannedDate] = useState('');
+  const [editSaving, setEditSaving] = useState(false);
 
   const loadWorkerNames = useCallback(async () => {
     try {
@@ -149,7 +157,43 @@ export default function OrderDetail() {
     }
   };
 
-  if (loading) return <Skeleton count={4} />;
+  const openEditMode = () => {
+    setEditAddress(order.address || '');
+    setEditDescription(order.description || '');
+    setEditEstimatedPrice(order.estimated_price ? String(order.estimated_price) : '');
+    setEditPlannedDate(order.planned_date ? order.planned_date.slice(0, 10) : '');
+    setEditMode(true);
+  };
+
+  const handleEditSave = async (e) => {
+    e.preventDefault();
+    setEditSaving(true);
+    setMsg('');
+    try {
+      const res = await fetch(`${BASE}/owner/orders/edit`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          id: order.id,
+          address: editAddress,
+          description: editDescription,
+          estimated_price: editEstimatedPrice ? parseFloat(editEstimatedPrice) : null,
+          planned_date: editPlannedDate || null,
+        }),
+      });
+      if (!res.ok) throw new Error('Ошибка сохранения');
+      setEditMode(false);
+      setMsg('Заказ обновлён');
+      await loadOrder();
+    } catch (err) {
+      setMsg('Ошибка: ' + err.message);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  if (loading) return <div className={styles.status}>Загрузка...</div>;
   if (error) return <div className={styles.status}>{error}</div>;
   if (!order) return <div className={styles.status}>Заказ не найден</div>;
 
@@ -177,13 +221,19 @@ export default function OrderDetail() {
           <span className={styles.label}>Стоимость</span>
           <span className={styles.price}>{order.estimated_price ? order.estimated_price.toLocaleString() + ' ₽' : '—'}</span>
         </div>
-        {order.request_id && (
+        {order.request_phone && (
           <div className={styles.infoItem}>
-            <span className={styles.label}>Заявка</span>
-            <span className={styles.requestId}>{order.request_id}</span>
+            <span className={styles.label}>Заявка от</span>
+            <span>{order.request_phone}</span>
           </div>
         )}
       </div>
+
+      {!isCompleted && (
+        <button className={styles.editBtn} onClick={openEditMode}>
+          Редактировать
+        </button>
+      )}
 
       <h2 className={styles.sectionTitle}>Исполнители</h2>
       {reports.length === 0 ? (
@@ -225,10 +275,14 @@ export default function OrderDetail() {
         </div>
       )}
 
-      {!isCompleted && (
+      {msg && (
+        <p className={msg.includes('Ошибка') ? styles.error : styles.success}>{msg}</p>
+      )}
+
+      {!isCompleted && user && reports.find((r) => r.worker_id === user.id) && (
         <>
           <h2 className={styles.sectionTitle}>Мой отчёт</h2>
-          <form className={styles.form} onSubmit={handleSaveReport}>
+          <form className={styles.reportForm} onSubmit={handleSaveReport}>
             <div className={styles.formRow}>
               <label>
                 Время (мин)
@@ -250,7 +304,6 @@ export default function OrderDetail() {
             <button type="submit" disabled={saving} className={styles.saveBtn}>
               {saving ? 'Сохранение...' : 'Сохранить отчёт'}
             </button>
-            {msg && <p className={msg.includes('Ошибка') ? styles.error : styles.success}>{msg}</p>}
           </form>
         </>
       )}
@@ -263,6 +316,38 @@ export default function OrderDetail() {
         >
           {completing ? 'Завершение...' : 'Завершить заказ'}
         </button>
+      )}
+
+      {editMode && (
+        <div className={styles.overlay} onClick={() => setEditMode(false)}>
+          <form className={styles.form} onClick={(e) => e.stopPropagation()} onSubmit={handleEditSave}>
+            <h2>Редактировать заказ</h2>
+            <label>
+              Адрес
+              <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} required />
+            </label>
+            <label>
+              Описание
+              <input type="text" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+            </label>
+            <label>
+              Стоимость
+              <input type="number" value={editEstimatedPrice} onChange={(e) => setEditEstimatedPrice(e.target.value)} />
+            </label>
+            <label>
+              Дата
+              <input type="date" value={editPlannedDate} onChange={(e) => setEditPlannedDate(e.target.value)} />
+            </label>
+            <div className={styles.formActions}>
+              <button type="submit" className={styles.saveBtn} disabled={editSaving}>
+                {editSaving ? 'Сохранение...' : 'Сохранить'}
+              </button>
+              <button type="button" className={styles.cancelBtn} onClick={() => setEditMode(false)}>
+                Отмена
+              </button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Landing.module.css';
 import logo from '../../logo.svg';
+import { usePhoneMask } from '../../hooks/usePhoneMask';
 
 const works = [
   {
@@ -50,7 +51,7 @@ const works = [
 
 export default function Landing() {
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const phone = usePhoneMask();
   const [comment, setComment] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -64,7 +65,7 @@ export default function Landing() {
       const res = await fetch('/api/v1/public/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, comment }),
+        body: JSON.stringify({ name, phone: phone.value, comment }),
       });
       if (!res.ok) throw new Error('Ошибка отправки');
       setSent(true);
@@ -100,15 +101,20 @@ export default function Landing() {
           <h1>Электрика для вашего дома</h1>
           <p>Подключение, замена проводки, щитки — всё, от розетки до ввода. Работаем в частных домах и квартирах.</p>
           <div className={styles.contacts}>
-            <span>📞 +7 (999) 123-45-67</span>
-            <span>✉️ electra@example.com</span>
+            <a href="tel:+79991234567" className={styles.contactLink}>+7 (999) 123-45-67</a>
+            <span className={styles.contactDivider}>·</span>
+            <a href="mailto:electra@example.com" className={styles.contactLink}>electra@example.com</a>
+            <span className={styles.contactDivider}>·</span>
+            <a href="https://vk.com/" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>ВКонтакте</a>
+            <span className={styles.contactDivider}>·</span>
+            <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>Telegram</a>
           </div>
         </div>
       </section>
 
-      {/* Примеры работ — карусель */}
+      {/* Что мы делаем — карусель */}
       <section className={styles.works}>
-        <h2>Примеры работ</h2>
+        <h2>Что мы делаем</h2>
         <div className={styles.carousel}>
           <button className={styles.arrow} onClick={() => scroll('left')} aria-label="Назад">‹</button>
           <div className={styles.trackWrapper}>
@@ -195,7 +201,13 @@ export default function Landing() {
           <form className={styles.form} onSubmit={handleSubmit}>
             {error && <div className={styles.formError}>{error}</div>}
             <input type="text" placeholder="Ваше имя" value={name} onChange={(e) => setName(e.target.value)} required />
-            <input type="text" placeholder="Телефон" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+            <input
+              type="tel"
+              value={phone.value}
+              onChange={phone.onChange}
+              placeholder="+7 (___) ___-__-__"
+              required
+            />
             <textarea placeholder="Что нужно сделать?" value={comment} onChange={(e) => setComment(e.target.value)} rows={3} />
             <button type="submit">Отправить</button>
           </form>
@@ -227,9 +239,27 @@ export default function Landing() {
 
       {/* Подвал */}
       <footer className={styles.footer}>
-        <span>Electra</span>
-        <span>Работаем с 2020 года</span>
-        <span>📞 +7 (999) 123-45-67</span>
+        <div className={styles.footerInner}>
+          <div className={styles.footerCol}>
+            <img src={logo} alt="Electra" className={styles.footerLogo} />
+            <p className={styles.footerDesc}>
+              Электрика для частных домов и квартир. Работаем с 2020 года.
+            </p>
+          </div>
+          <div className={styles.footerCol}>
+            <h4>Контакты</h4>
+            <a href="tel:+79991234567">+7 (999) 123-45-67</a>
+            <a href="mailto:electra@example.com">electra@example.com</a>
+          </div>
+          <div className={styles.footerCol}>
+            <h4>Связаться</h4>
+            <a href="https://vk.com/electra" target="_blank" rel="noopener noreferrer">ВКонтакте</a>
+            <a href="https://t.me/electra" target="_blank" rel="noopener noreferrer">Telegram</a>
+          </div>
+        </div>
+        <div className={styles.footerBottom}>
+          © 2020–{new Date().getFullYear()} Electra
+        </div>
       </footer>
     </div>
   );

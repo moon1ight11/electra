@@ -5,6 +5,7 @@ const workerLinks = [
   { to: '/dashboard', label: 'Главная' },
   { to: '/orders/planned', label: 'В работе' },
   { to: '/orders/history', label: 'История' },
+  { to: '/help', label: 'Помощь' },
 ];
 
 const ownerLinks = [

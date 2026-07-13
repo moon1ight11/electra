@@ -5,12 +5,6 @@
   margin-bottom: 24px;
 }
 
-.status {
-  font-size: 16px;
-  color: #6B6355;
-  padding: 40px 0;
-}
-
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));

@@ -1,0 +1,83 @@
+.page {
+  max-width: 700px;
+}
+
+.page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 24px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.tab,
+.tabActive {
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.tab {
+  background: #F0ECE0;
+  color: #6B6355;
+}
+
+.tab:hover {
+  background: #E5DFCF;
+}
+
+.tabActive {
+  background: #3D4A3E;
+  color: #FCFAF6;
+}
+
+.content h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 20px;
+}
+
+.block {
+  background: #FCFAF6;
+  padding: 18px 22px;
+  border-radius: 14px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+  margin-bottom: 14px;
+}
+
+.block h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 8px;
+}
+
+.block p {
+  font-size: 14px;
+  color: #6B6355;
+  line-height: 1.6;
+}
+
+.block ul,
+.block ol {
+  padding-left: 20px;
+  font-size: 14px;
+  color: #6B6355;
+  line-height: 1.8;
+}
+
+.block li {
+  margin-bottom: 4px;
+}

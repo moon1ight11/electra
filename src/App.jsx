@@ -16,6 +16,7 @@ import OwnerOrderDetail from './pages/Owner/OrderDetail';
 import OwnerCreateOrder from './pages/Owner/CreateOrder';
 import OwnerStatistics from './pages/Owner/Statistics';
 import OwnerWorkers from './pages/Owner/Workers';
+import Help from './pages/Worker/Help';
 
 export default function App() {
   return (
@@ -37,6 +38,9 @@ export default function App() {
           } />
           <Route path="/orders/:id" element={
             <ProtectedRoute role="worker"><Layout><OrderDetail /></Layout></ProtectedRoute>
+          } />
+          <Route path="/help" element={
+            <ProtectedRoute role="worker"><Layout><Help /></Layout></ProtectedRoute>
           } />
 
           {/* Owner */}
