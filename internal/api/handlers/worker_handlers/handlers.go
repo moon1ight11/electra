@@ -3,6 +3,7 @@ package workerhandlers
 import (
 	"electra/internal/api/models"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -33,6 +34,10 @@ func (h *WorkerHandler) CreateWorker(c *gin.Context) {
 	worker, err := h.authService.CreateWorker(c.Request.Context(), ownerUUID, req.Name, req.Phone, req.Password, req.Specialization)
 	if err != nil {
 		h.logger.Error("error in services in create worker", "error", err)
+		if strings.Contains(err.Error(), "only owner") {
+			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -53,3 +53,7 @@ func NewLogger(cfg config.Config) (Logger, error) {
 
 	return &appLogger{Logger: logger}, nil
 }
+
+func NewNopLogger() Logger {
+	return &appLogger{Logger: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))}
+}

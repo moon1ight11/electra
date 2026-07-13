@@ -16,6 +16,12 @@ func (h *OrderHandler) CreateDirect(c *gin.Context) {
 		return
 	}
 
+	if len(input.WorkerIDs) == 0 {
+		h.logger.Error("error in create direct: empty worker_ids")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "выберите хотя бы одного исполнителя"})
+		return
+	}
+
 	ownerID, err := uuid.Parse(c.GetString("UserId"))
 	if err != nil {
 		h.logger.Error("error in parce id in create direct", "error", err, "id", ownerID)
