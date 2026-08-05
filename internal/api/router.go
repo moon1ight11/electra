@@ -10,6 +10,7 @@ import (
 	"electra/internal/api/jwt"
 	"electra/internal/api/middlewares"
 	"electra/pkg/logger"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,12 +44,13 @@ func NewRouter(
 	}
 }
 
-func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger) {
-	// мидлвары для корсов
-	r.ginEngine.Use(middlewares.CORS())
+func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger, corsOrigin string) {
+	r.ginEngine.Use(middlewares.CORS(corsOrigin))
 
 	// группировка роутов
 	publicGroup := r.ginEngine.Group("/api/v1/public")
+	rateLimiter := middlewares.NewRateLimiter(5, time.Minute)
+
 	authGroup := r.ginEngine.Group("/api/v1/auth")
 	workerGroup := r.ginEngine.Group("/api/v1/worker")
 	ownerGroup := r.ginEngine.Group("/api/v1/owner")
@@ -59,7 +61,7 @@ func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger) {
 	ownerGroup.Use(middlewares.AuthOwner(logger))
 
 	// АУТЕНТИФИКАЦИЯ // --- только для созданных пользователей
-	authGroup.POST("/login", r.authHandler.Login)
+	authGroup.POST("/login", rateLimiter.Middleware(), r.authHandler.Login)
 
 	// РАБОТНИК // --- только для работников
 	workerGroup.POST("/logout", r.authHandler.Logout)

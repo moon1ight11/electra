@@ -102,7 +102,7 @@ func (a *App) Init() error {
 		statisticsHandler,
 		workerHandler,
 	)
-	a.router.Init(jwtService, a.logger)
+	a.router.Init(jwtService, a.logger, a.cfg.Server.CORSOrigin)
 
 	return nil
 }

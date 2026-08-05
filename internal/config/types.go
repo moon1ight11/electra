@@ -41,4 +41,5 @@ type LoggerConfig struct {
 type ServerConfig struct {
 	Port string `mapstructure:"port"`
 	Host string `mapstructure:"host"`
+	CORSOrigin string `mapstructure:"cors_origin"`
 }

@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -24,6 +25,14 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("unable to decode config into struct: %w", err)
 	}
 
+	// Переопределяем из переменных окружения
+	if envSecret := os.Getenv("JWT_SECRET"); envSecret != "" {
+		cfg.JWT.Secret = envSecret
+	}
+	if envDBPassword := os.Getenv("DB_PASSWORD"); envDBPassword != "" {
+		cfg.DataBase.Password = envDBPassword
+	}
+
 	return &cfg, nil
 }
 
@@ -33,6 +42,7 @@ func setDefaults() {
 
 	viper.SetDefault("server.host", "localhost")
 	viper.SetDefault("server.port", 8080)
+	viper.SetDefault("server.cors_origin", "http://localhost:3000")
 
 	viper.SetDefault("jwt.expiration", "24h")
 }
