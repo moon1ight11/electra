@@ -2,6 +2,7 @@ package api
 
 import (
 	authhandlers "electra/internal/api/handlers/auth_handlers"
+	healthhandler "electra/internal/api/handlers/health_handler"
 	orderhandlers "electra/internal/api/handlers/order_handlers"
 	orderworkerhandlers "electra/internal/api/handlers/order_worker_handlers"
 	requesthandlers "electra/internal/api/handlers/request_handlers"
@@ -49,8 +50,6 @@ func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger, corsOri
 
 	// группировка роутов
 	publicGroup := r.ginEngine.Group("/api/v1/public")
-	rateLimiter := middlewares.NewRateLimiter(5, time.Minute)
-
 	authGroup := r.ginEngine.Group("/api/v1/auth")
 	workerGroup := r.ginEngine.Group("/api/v1/worker")
 	ownerGroup := r.ginEngine.Group("/api/v1/owner")
@@ -59,6 +58,11 @@ func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger, corsOri
 	workerGroup.Use(middlewares.Auth(jwtService, logger))
 	ownerGroup.Use(middlewares.Auth(jwtService, logger))
 	ownerGroup.Use(middlewares.AuthOwner(logger))
+
+	rateLimiter := middlewares.NewRateLimiter(5, time.Minute)
+	healthHandler := healthhandler.NewHealthHandler()
+
+	publicGroup.GET("/health", healthHandler.Check)
 
 	// АУТЕНТИФИКАЦИЯ // --- только для созданных пользователей
 	authGroup.POST("/login", rateLimiter.Middleware(), r.authHandler.Login)
