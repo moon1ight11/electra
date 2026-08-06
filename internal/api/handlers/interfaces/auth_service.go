@@ -2,17 +2,17 @@ package interfaces
 
 import (
 	"context"
+	"electra/internal/api/models"
 	"electra/internal/domain"
+
 	"github.com/google/uuid"
 )
 
 type AuthService interface {
-	// проверка телефона и пароля и возврат токена
 	Login(ctx context.Context, phone, password string) (string, error)
-	// создание нового исполнителя
 	CreateWorker(ctx context.Context, ownerID uuid.UUID, name, phone, password, specialization string) (*domain.Worker, error)
-	// получение списка работников
 	ListWorkers(ctx context.Context) ([]domain.WorkerInfo, error)
-	// получение информации о пользователе
 	GetMe(ctx context.Context, userID uuid.UUID) (*domain.WorkerInfo, error)
+	DeleteWorker(ctx context.Context, ownerID, workerID uuid.UUID) error
+	UpdateProfile(ctx context.Context, userID uuid.UUID, input models.UpdateProfileInput) (*domain.WorkerInfo, error)
 }

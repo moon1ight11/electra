@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// получение статистики по исполнителю
 func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from, to time.Time) (*domain.StatsRow, error) {
 	query := `
 		SELECT w.id, w.name,
@@ -36,12 +35,11 @@ func (r *StatisticsRepo) ByWorker(ctx context.Context, workerID uuid.UUID, from,
 		if err == sql.ErrNoRows {
 			return &domain.StatsRow{WorkerID: workerID}, nil
 		}
-		return nil, fmt.Errorf("error in stats by worker: %w", err)
+		return nil, fmt.Errorf("failed to get stats by worker: %w", err)
 	}
 	return row, nil
 }
 
-// получение статистики по всем исполнителям
 func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]domain.StatsRow, error) {
 	query := `
 		SELECT w.id, w.name,
@@ -58,7 +56,7 @@ func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]
 
 	rows, err := r.db.DB.QueryContext(ctx, query, from, to)
 	if err != nil {
-		return nil, fmt.Errorf("error in stats all workers: %w", err)
+		return nil, fmt.Errorf("failed to get stats all workers: %w", err)
 	}
 	defer rows.Close()
 
@@ -71,14 +69,13 @@ func (r *StatisticsRepo) AllWorkers(ctx context.Context, from, to time.Time) ([]
 			&s.OrdersCount,
 			&s.TotalEarned,
 			&s.TotalTimeSpent); err != nil {
-			return nil, fmt.Errorf("error in scan stats: %w", err)
+			return nil, fmt.Errorf("failed to scan stats: %w", err)
 		}
 		stats = append(stats, s)
 	}
 	return stats, rows.Err()
 }
 
-// получение общей статистики
 func (r *StatisticsRepo) SummaryStats(ctx context.Context, from, to time.Time) (*domain.SummaryRow, error) {
 	query := `
 		SELECT
@@ -96,7 +93,7 @@ func (r *StatisticsRepo) SummaryStats(ctx context.Context, from, to time.Time) (
 		if err == sql.ErrNoRows {
 			return &domain.SummaryRow{}, nil
 		}
-		return nil, fmt.Errorf("error in summary stats: %w", err)
+		return nil, fmt.Errorf("failed to get summary stats: %w", err)
 	}
 	return row, nil
 }

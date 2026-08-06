@@ -31,3 +31,9 @@ type SummaryStats struct {
 	TotalEarned    float64 `json:"total_earned"`
 	TotalTimeSpent int     `json:"total_time_spent"`
 }
+
+type UpdateProfileInput struct {
+	Name           string `json:"name"`
+	Specialization string `json:"specialization"`
+	Password       string `json:"password"`
+}

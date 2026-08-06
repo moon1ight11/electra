@@ -8,7 +8,9 @@ CREATE TABLE
         phone VARCHAR(50),
         role worker_role NOT NULL DEFAULT 'worker',
         password_hash VARCHAR(255) NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        specialization VARCHAR(255),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        deleted_at TIMESTAMPTZ
     );
 
 -- +goose Down

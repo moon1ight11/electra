@@ -23,7 +23,6 @@ import (
 	"electra/internal/storage/repo/workers"
 	"electra/pkg/logger"
 	"fmt"
-	"log"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -39,53 +38,44 @@ type App struct {
 }
 
 func New(cfg config.Config) *App {
-	return &App{
-		cfg: cfg,
-	}
+	return &App{cfg: cfg}
 }
 
 func (a *App) Init() error {
-	// логгер
-	logger, err := logger.NewLogger(a.cfg)
-	if err != nil {
-		log.Fatalf("Failed to init logger: %v", err)
-	}
-	a.logger = logger
+	var err error
 
-	// бд
-	db, err := database.PostgresConnection(a.cfg)
+	a.logger, err = logger.NewLogger(a.cfg)
 	if err != nil {
-		return fmt.Errorf("db connection: %w", err)
+		return fmt.Errorf("failed to init logger: %w", err)
 	}
-	a.db = db
 
-	// миграции
+	a.db, err = database.PostgresConnection(a.cfg)
+	if err != nil {
+		return fmt.Errorf("failed to connect to database: %w", err)
+	}
+
 	if err := a.db.UpMigrations(); err != nil {
-		return fmt.Errorf("migrations: %w", err)
+		return fmt.Errorf("failed to run migrations: %w", err)
 	}
 	a.logger.Info("migrations applied")
 
-	// JWT
 	jwtService := jwt.NewJWTService(
 		a.cfg.JWT.Secret,
 		time.Duration(a.cfg.JWT.Expiration)*time.Hour,
 	)
 
-	// репо-слой
 	requestRepo := requests.NewRequestRepo(a.db)
 	workerRepo := workers.NewWorkerRepo(a.db)
 	orderRepo := orders.NewOrderRepo(a.db)
 	orderWorkerRepo := orderworkers.NewOrderWorkerRepo(a.db)
 	statisticsRepo := statistic.NewStatisticsRepo(a.db)
 
-	// сервисный слой
 	authService := authservice.NewAuthService(workerRepo, jwtService)
 	requestService := requestservice.NewRequestService(requestRepo, orderRepo)
 	orderService := orderservice.NewOrderService(orderRepo, orderWorkerRepo)
 	orderWorkerService := orderworkerservice.NewOrderWorkerService(orderWorkerRepo, workerRepo)
 	statisticsService := statisticservice.NewStatisticsService(statisticsRepo)
 
-	// слой хэндлеров
 	authHandler := authhandlers.NewAuthHandler(authService, a.logger)
 	requestHandler := requesthandlers.NewRequestHandler(requestService, a.logger)
 	orderHandler := orderhandlers.NewOrderHandler(orderService, a.logger)
@@ -93,7 +83,6 @@ func (a *App) Init() error {
 	statisticsHandler := statisticshandlers.NewStatisticsHandler(statisticsService, a.logger)
 	workerHandler := workerhandlers.NewWorkerHandler(authService, a.logger)
 
-	// роутер
 	a.router = api.NewRouter(
 		authHandler,
 		requestHandler,
@@ -111,7 +100,6 @@ func (a *App) Run() error {
 	addr := fmt.Sprintf("%s:%s", a.cfg.Server.Host, a.cfg.Server.Port)
 	a.logger.Info("starting server", slog.String("addr", addr))
 
-	// ГШ
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 

@@ -8,24 +8,22 @@ import (
 	"github.com/spf13/viper"
 )
 
-// загрузка конфигурации
 func Load() (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("./internal/config/")
 
 	setDefaults()
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Printf("Warning: Config file not found: %v", err)
+		log.Printf("config file not found, using defaults and env: %v", err)
 	}
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("unable to decode config into struct: %w", err)
+		return nil, fmt.Errorf("failed to decode config: %w", err)
 	}
 
-	// Переопределяем из переменных окружения
 	if envSecret := os.Getenv("JWT_SECRET"); envSecret != "" {
 		cfg.JWT.Secret = envSecret
 	}
@@ -36,7 +34,6 @@ func Load() (*Config, error) {
 	return &cfg, nil
 }
 
-// дефолтные значения полей конфигурации
 func setDefaults() {
 	viper.SetDefault("environment", "development")
 

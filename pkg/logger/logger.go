@@ -2,6 +2,7 @@ package logger
 
 import (
 	"electra/internal/config"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -31,7 +32,7 @@ func NewLogger(cfg config.Config) (Logger, error) {
 	if cfg.Logger.FilePath != "" {
 		logDir := filepath.Dir(cfg.Logger.FilePath)
 		if err := os.MkdirAll(logDir, 0755); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to create log directory: %w", err)
 		}
 	}
 
@@ -46,7 +47,11 @@ func NewLogger(cfg config.Config) (Logger, error) {
 	}
 
 	var handler slog.Handler
-	handler = slog.NewTextHandler(lumberjackLogger, opts)
+	if cfg.Logger.FilePath != "" {
+		handler = slog.NewTextHandler(lumberjackLogger, opts)
+	} else {
+		handler = slog.NewTextHandler(os.Stdout, opts)
+	}
 
 	logger := slog.New(handler)
 	slog.SetDefault(logger)

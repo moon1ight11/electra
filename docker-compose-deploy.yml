@@ -22,6 +22,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DB_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./config.yaml:/app/config.yaml
 

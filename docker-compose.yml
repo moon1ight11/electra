@@ -14,23 +14,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  backend:
-    build: ./electra_back
-    ports:
-      - "8080:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - DB_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - ./config.yaml:/app/config.yaml
-
-  frontend:
-    build: ./electra_front
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend

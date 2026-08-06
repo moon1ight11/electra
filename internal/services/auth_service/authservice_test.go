@@ -150,4 +150,48 @@ func TestCreateWorker_DuplicatePhone(t *testing.T) {
 	assert.Contains(t, err.Error(), "already exists")
 }
 
+func TestDeleteWorker_Success(t *testing.T) {
+	auth, repo, cleanup := setupAuth(t)
+	defer cleanup()
+
+	owner := &domain.Worker{Name: "Owner", Phone: strPtr("79001234567"), Role: domain.RoleOwner, PasswordHash: "hash"}
+	repo.Create(context.Background(), owner)
+
+	worker, _ := auth.CreateWorker(context.Background(), owner.ID, "Petya", "79007654321", "pass", "")
+
+	err := auth.DeleteWorker(context.Background(), owner.ID, worker.ID)
+	assert.NoError(t, err)
+
+	// проверяем что работник больше не находится
+	found, _ := repo.GetByID(context.Background(), worker.ID)
+	assert.Nil(t, found)
+}
+
+func TestDeleteWorker_NotOwner(t *testing.T) {
+	auth, repo, cleanup := setupAuth(t)
+	defer cleanup()
+
+	owner := &domain.Worker{Name: "Owner", Phone: strPtr("79001234567"), Role: domain.RoleOwner, PasswordHash: "hash"}
+	repo.Create(context.Background(), owner)
+
+	worker1, _ := auth.CreateWorker(context.Background(), owner.ID, "Worker1", "79001111111", "pass", "")
+	worker2, _ := auth.CreateWorker(context.Background(), owner.ID, "Worker2", "79002222222", "pass", "")
+
+	err := auth.DeleteWorker(context.Background(), worker1.ID, worker2.ID)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "only owner")
+}
+
+func TestDeleteWorker_OwnerCannotDeleteThemselves(t *testing.T) {
+	auth, repo, cleanup := setupAuth(t)
+	defer cleanup()
+
+	owner := &domain.Worker{Name: "Owner", Phone: strPtr("79001234567"), Role: domain.RoleOwner, PasswordHash: "hash"}
+	repo.Create(context.Background(), owner)
+
+	err := auth.DeleteWorker(context.Background(), owner.ID, owner.ID)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "cannot delete themselves")
+}
+
 func strPtr(s string) *string { return &s }

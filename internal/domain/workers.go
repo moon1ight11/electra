@@ -23,12 +23,14 @@ type Worker struct {
 	PasswordHash   string     `json:"-"`
 	Specialization *string    `json:"specialization,omitempty"`
 	CreatedAt      time.Time  `json:"created_at"`
+	DeletedAt      *time.Time `json:"-"`
 }
 
 // информация по работнику
 type WorkerInfo struct {
 	ID             uuid.UUID `json:"id"`
 	Name           string    `json:"name"`
+	Role           WorkerRole `json:"role"`
 	Specialization string    `json:"specialization,omitempty"`
 }
 

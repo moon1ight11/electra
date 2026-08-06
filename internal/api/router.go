@@ -76,6 +76,7 @@ func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger, corsOri
 	workerGroup.PATCH("/orders/:id/complete", r.orderHandler.Complete)
 	workerGroup.GET("/workers", r.workerHandler.ListWorkers)
 	workerGroup.GET("/me", r.workerHandler.GetMe)
+	workerGroup.PATCH("/me", r.workerHandler.UpdateProfile)
 
 	// ВЛАДЕЛЕЦ // --- только владелец
 	ownerGroup.POST("/workers", r.workerHandler.CreateWorker)
@@ -92,6 +93,7 @@ func (r *Router) Init(jwtService jwt.TokenService, logger logger.Logger, corsOri
 	ownerGroup.GET("/statistics/workers/:workerId", r.statisticsHandler.ByWorker)
 	ownerGroup.GET("/statistics/all", r.statisticsHandler.AllWorkers)
 	ownerGroup.GET("/statistics/summary", r.statisticsHandler.Summary)
+	ownerGroup.DELETE("/workers/:id", r.workerHandler.DeleteWorker)
 
 	// ПУБЛИЧНОЕ // ---
 	publicGroup.POST("/requests", r.requestHandler.CreateRequest)

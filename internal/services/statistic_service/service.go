@@ -10,16 +10,15 @@ import (
 	"github.com/google/uuid"
 )
 
-// получение статистики по работнику
 func (s *StatisticsService) ByWorker(ctx context.Context, ownerID, workerID uuid.UUID, from, to string) (*models.WorkerStats, error) {
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {
-		return nil, fmt.Errorf("error in get stats by worker: %w", err)
+		return nil, fmt.Errorf("failed to parse period: %w", err)
 	}
 
 	row, err := s.statisticsRepo.ByWorker(ctx, workerID, fromTime, toTime)
 	if err != nil {
-		return nil, fmt.Errorf("error in get stats by worker: %w", err)
+		return nil, fmt.Errorf("failed to get stats by worker: %w", err)
 	}
 
 	return &models.WorkerStats{
@@ -31,16 +30,15 @@ func (s *StatisticsService) ByWorker(ctx context.Context, ownerID, workerID uuid
 	}, nil
 }
 
-// получение статистики по всем работникам
 func (s *StatisticsService) AllWorkers(ctx context.Context, ownerID uuid.UUID, from, to string) ([]models.WorkerStats, error) {
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {
-		return nil, fmt.Errorf("error in get stats by all: %w", err)
+		return nil, fmt.Errorf("failed to parse period: %w", err)
 	}
 
 	rows, err := s.statisticsRepo.AllWorkers(ctx, fromTime, toTime)
 	if err != nil {
-		return nil, fmt.Errorf("error in get stats by all: %w", err)
+		return nil, fmt.Errorf("failed to get stats all workers: %w", err)
 	}
 
 	result := make([]models.WorkerStats, len(rows))
@@ -57,16 +55,15 @@ func (s *StatisticsService) AllWorkers(ctx context.Context, ownerID uuid.UUID, f
 	return result, nil
 }
 
-// получение общей статистики
 func (s *StatisticsService) Summary(ctx context.Context, from, to string) (*models.SummaryStats, error) {
 	fromTime, toTime, err := parsePeriod(from, to)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse period: %w", err)
 	}
 
 	row, err := s.statisticsRepo.SummaryStats(ctx, fromTime, toTime)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get summary stats: %w", err)
 	}
 
 	return &models.SummaryStats{
@@ -76,7 +73,6 @@ func (s *StatisticsService) Summary(ctx context.Context, from, to string) (*mode
 	}, nil
 }
 
-// хэлпер для парсинга времени
 func parsePeriod(from, to string) (time.Time, time.Time, error) {
 	fromTime, err := time.Parse("2006-01-02", from)
 	if err != nil {

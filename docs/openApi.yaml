@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Electra API
-  version: 1.1.0
+  version: 1.2.0
 
 servers:
   - url: http://localhost:8080/api/v1
@@ -56,6 +56,19 @@ components:
           type: string
           example: "Электрик"
 
+    UpdateProfileInput:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Петя"
+        specialization:
+          type: string
+          example: "Электрик"
+        password:
+          type: string
+          example: "newpass"
+
     WorkerInfo:
       type: object
       properties:
@@ -64,6 +77,9 @@ components:
           format: uuid
         name:
           type: string
+        role:
+          type: string
+          enum: [owner, worker]
         specialization:
           type: string
 
@@ -290,6 +306,19 @@ components:
           type: string
 
 paths:
+  # ==================== HEALTH ====================
+  /public/health:
+    get:
+      tags: [auth]
+      summary: Проверка работоспособности сервера
+      responses:
+        '200':
+          description: Сервер работает
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
   # ==================== AUTH ====================
   /auth/login:
     post:
@@ -338,6 +367,24 @@ paths:
       responses:
         '200':
           description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkerInfo'
+    patch:
+      tags: [auth]
+      summary: Редактирование профиля
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileInput'
+      responses:
+        '200':
+          description: Профиль обновлён
           content:
             application/json:
               schema:
@@ -475,6 +522,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkerInfo'
+
+  /owner/workers/{id}:
+    delete:
+      tags: [workers]
+      summary: Удалить исполнителя (софт-удаление, статистика сохраняется)
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Исполнитель удалён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
 
   /owner/requests/new:
     get:
