@@ -8,36 +8,36 @@ const works = [
   {
     id: 1,
     title: 'Подключение дома',
-    description: 'Полная электрификация частного дома 150 м²: ввод, щиток, розетки, освещение',
-    price: 'от 25 000 ₽',
+    description: 'Подключение дома к электросети: ввод кабеля от столба, монтаж щитка на фасаде, организация заземления и защитной автоматики',
+    price: 'от 10 000 ₽',
     image: '/images/works/work-1.jpg',
   },
   {
     id: 2,
     title: 'Замена проводки',
-    description: 'Замена старой алюминиевой проводки на медную в квартире-студии',
+    description: 'Полная замена электропроводки на медную: удаление старого кабеля, штробление, прокладка новых линий на розетки и освещение',
     price: 'от 18 000 ₽',
     image: '/images/works/work-2.jpg',
   },
   {
     id: 3,
-    title: 'Электрика в бане',
-    description: 'Проводка, освещение, тёплый пол, подключение печи',
-    price: 'от 15 000 ₽',
+    title: 'Установка опоры',
+    description: 'Монтаж железобетонной опоры ЛЭП на участке: доставка, установка, выравнивание и закрепление под ключ',
+    price: 'от 40 000 ₽',
     image: '/images/works/work-3.jpg',
   },
   {
     id: 4,
     title: 'Щиток под ключ',
-    description: 'Сборка и установка распределительного щита с автоматами и УЗО',
-    price: 'от 8 000 ₽',
+    description: 'Сборка и монтаж распределительного щита: подбор автоматики и УЗО, установка накладного или встраиваемого бокса, расключение и маркировка',
+    price: 'от 5 000 ₽',
     image: '/images/works/work-4.jpg',
   },
   {
     id: 5,
     title: 'Освещение участка',
-    description: 'Установка уличных светильников, прокладка кабеля, автоматика',
-    price: 'от 12 000 ₽',
+    description: 'Монтаж уличного освещения под ключ: кабель в земле или по воздуху, установка фонарей и прожекторов, подключение автоматики',
+    price: 'от 10 000 ₽',
     image: '/images/works/work-5.jpg',
   },
   {
@@ -46,6 +46,13 @@ const works = [
     description: 'Поиск неисправностей, замеры, проверка заземления и автоматов',
     price: 'от 3 000 ₽',
     image: '/images/works/work-6.jpg',
+  },
+  {
+    id: 7,
+    title: 'Видеонаблюдение',
+    description: 'Установка камер видеонаблюдения: прокладка кабеля, монтаж камер, подключение и настройка записи',
+    price: 'от 2 500 ₽',
+    image: '/images/works/work-7.jpg',
   },
 ];
 
@@ -101,13 +108,13 @@ export default function Landing() {
           <h1>Электрика для вашего дома</h1>
           <p>Подключение, замена проводки, щитки — всё, от розетки до ввода. Работаем в частных домах и квартирах.</p>
           <div className={styles.contacts}>
-            <a href="tel:+79991234567" className={styles.contactLink}>+7 (999) 123-45-67</a>
+            <a href="tel:+79009231984" className={styles.contactLink}>+7 (900) 923-19-84</a>
             <span className={styles.contactDivider}>·</span>
-            <a href="mailto:electra@example.com" className={styles.contactLink}>electra@example.com</a>
+            <a href="mailto:electra.tomsk@gmail.com" className={styles.contactLink}>electra.tomsk@gmail.com</a>
             <span className={styles.contactDivider}>·</span>
-            <a href="https://vk.com/" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>ВКонтакте</a>
+            <a href="https://vk.ru/as.dimas" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>ВКонтакте</a>
             <span className={styles.contactDivider}>·</span>
-            <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>Telegram</a>
+            <a href="https://t.me/Ruferrr19" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>Telegram</a>
           </div>
         </div>
       </section>
@@ -248,13 +255,13 @@ export default function Landing() {
           </div>
           <div className={styles.footerCol}>
             <h4>Контакты</h4>
-            <a href="tel:+79991234567">+7 (999) 123-45-67</a>
-            <a href="mailto:electra@example.com">electra@example.com</a>
+            <a href="tel:+79991234567">+7 (900) 923-19-84</a>
+            <a href="mailto:electra.tomsk@gmail.com">electra.tomsk@gmail.com</a>
           </div>
           <div className={styles.footerCol}>
             <h4>Связаться</h4>
-            <a href="https://vk.com/electra" target="_blank" rel="noopener noreferrer">ВКонтакте</a>
-            <a href="https://t.me/electra" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://vk.ru/as.dimas" target="_blank" rel="noopener noreferrer">ВКонтакте</a>
+            <a href="https://t.me/Ruferrr19" target="_blank" rel="noopener noreferrer">Telegram</a>
           </div>
         </div>
         <div className={styles.footerBottom}>

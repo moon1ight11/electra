@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { createWorker } from '../../api/workers';
+import { createWorker, deleteWorker } from '../../api/workers';
 import { usePhoneMask } from '../../hooks/usePhoneMask';
 import Skeleton from '../../components/Skeleton/Skeleton';
 import styles from './Workers.module.css';
@@ -72,6 +72,18 @@ export default function Workers() {
     }
   };
 
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Удалить исполнителя "${name}"? Статистика сохранится.`)) return;
+    setMsg('');
+    try {
+      await deleteWorker(id);
+      setMsg('Исполнитель удалён');
+      loadWorkers();
+    } catch (err) {
+      setMsg('Ошибка: ' + err.message);
+    }
+  };
+
   if (loading) return <Skeleton count={4} />;
   if (error) return <div className={styles.status}>{error}</div>;
 
@@ -110,6 +122,12 @@ export default function Workers() {
                 <span>·</span>
                 <span>{Math.floor(w.totalTimeSpent / 60)} ч {w.totalTimeSpent % 60} мин</span>
               </div>
+              <button
+                className={styles.deleteBtn}
+                onClick={() => handleDelete(w.id, w.name)}
+              >
+                Удалить
+              </button>
             </div>
             {i === 0 && <span className={styles.topBadge}>🏆</span>}
           </div>

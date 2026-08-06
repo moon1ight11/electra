@@ -21,3 +21,29 @@ export async function createWorker(name, phone, password, specialization) {
   }
   return res.json();
 }
+
+export async function deleteWorker(id) {
+  const res = await fetch(`${BASE}/owner/workers/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Ошибка удаления');
+  }
+  return res.json();
+}
+
+export async function updateProfile(data) {
+  const res = await fetch(`${BASE}/worker/me`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Ошибка обновления профиля');
+  }
+  return res.json();
+}

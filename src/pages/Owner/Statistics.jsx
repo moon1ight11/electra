@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './Statistics.module.css';
+import Skeleton from '../../components/Skeleton/Skeleton';
 
 export default function Statistics() {
   const [stats, setStats] = useState([]);
@@ -51,7 +52,7 @@ export default function Statistics() {
     loadStats();
   };
 
-  if (loading) return <div className={styles.status}>Загрузка...</div>;
+  if (loading) return <Skeleton count={4} />;
   if (error) return <div className={styles.status}>{error}</div>;
 
   return (

@@ -6,15 +6,18 @@ import Skeleton from '../../components/Skeleton/Skeleton';
 export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async () => {
       try {
         const res = await fetch('/api/v1/owner/orders/history', { credentials: 'include' });
-        if (!res.ok) throw new Error('Ошибка');
+        if (!res.ok) throw new Error('Ошибка загрузки');
         const data = await res.json();
         setOrders(data);
-      } catch { } finally {
+      } catch (err) {
+        setError('Не удалось загрузить историю');
+      } finally {
         setLoading(false);
       }
     };
@@ -22,6 +25,7 @@ export default function OrderHistory() {
   }, []);
 
   if (loading) return <Skeleton count={4} />;
+  if (error) return <div className={styles.status}>{error}</div>;
 
   return (
     <div className={styles.page}>

@@ -237,3 +237,20 @@
   border-radius: 20px;
   font-weight: 600;
 }
+
+.deleteBtn {
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: none;
+  border: 1px solid #c44;
+  border-radius: 6px;
+  color: #c44;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.deleteBtn:hover {
+  background: #c44;
+  color: #fff;
+}

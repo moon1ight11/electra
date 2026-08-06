@@ -17,17 +17,10 @@ export default function Login() {
     setError('');
     try {
       await loginRequest(phone.value, password);
-
-      const [ownerCheck, meRes] = await Promise.all([
-        fetch('/api/v1/owner/requests/new'),
-        fetch('/api/v1/worker/me', { credentials: 'include' }),
-      ]);
-
-      const role = ownerCheck.ok ? 'owner' : 'worker';
+      const meRes = await fetch('/api/v1/worker/me', { credentials: 'include' });
       const me = await meRes.json();
-
-      login(me.id, me.name, role);
-      navigate(role === 'owner' ? '/owner/dashboard' : '/dashboard');
+      login(me.id, me.name, me.role);
+      navigate(me.role === 'owner' ? '/owner/dashboard' : '/dashboard');
     } catch (err) {
       setError(err.message);
     }

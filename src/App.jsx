@@ -17,6 +17,7 @@ import OwnerCreateOrder from './pages/Owner/CreateOrder';
 import OwnerStatistics from './pages/Owner/Statistics';
 import OwnerWorkers from './pages/Owner/Workers';
 import Help from './pages/Worker/Help';
+import Profile from './pages/Worker/Profile';
 
 export default function App() {
   return (
@@ -41,6 +42,9 @@ export default function App() {
           } />
           <Route path="/help" element={
             <ProtectedRoute role="worker"><Layout><Help /></Layout></ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute role="worker"><Layout><Profile /></Layout></ProtectedRoute>
           } />
 
           {/* Owner */}

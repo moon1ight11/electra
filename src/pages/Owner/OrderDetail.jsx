@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { fetchAllPlannedOrders } from '../../api/orders';
 import { fetchReports, updateReport } from '../../api/reports';
 import styles from './OrderDetail.module.css';
+import Skeleton from '../../components/Skeleton/Skeleton';
 
 const BASE = '/api/v1';
 
@@ -20,14 +21,12 @@ export default function OrderDetail() {
   const [removing, setRemoving] = useState(false);
   const [completing, setCompleting] = useState(false);
 
-  // Отчёт
   const [timeSpent, setTimeSpent] = useState('');
   const [earnedAmount, setEarnedAmount] = useState('');
   const [materials, setMaterials] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Редактирование заказа
   const [editMode, setEditMode] = useState(false);
   const [editAddress, setEditAddress] = useState('');
   const [editDescription, setEditDescription] = useState('');
@@ -193,7 +192,7 @@ export default function OrderDetail() {
     }
   };
 
-  if (loading) return <div className={styles.status}>Загрузка...</div>;
+  if (loading) return <Skeleton count={4} />;
   if (error) return <div className={styles.status}>{error}</div>;
   if (!order) return <div className={styles.status}>Заказ не найден</div>;
 

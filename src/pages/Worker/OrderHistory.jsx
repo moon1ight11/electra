@@ -15,10 +15,10 @@ export default function OrderHistory() {
   const loadHistory = async () => {
     try {
       const res = await fetch('/api/v1/worker/orders/history', { credentials: 'include' });
-      if (!res.ok) throw new Error('Ошибка');
+      if (!res.ok) throw new Error('Ошибка загрузки');
       const data = await res.json();
       setOrders(data);
-    } catch {
+    } catch (err) {
       setError('Не удалось загрузить историю');
     } finally {
       setLoading(false);

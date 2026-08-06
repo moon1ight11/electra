@@ -12,9 +12,7 @@ export function AuthProvider({ children }) {
         const meRes = await fetch('/api/v1/worker/me', { credentials: 'include' });
         if (meRes.ok) {
           const me = await meRes.json();
-          const ownerCheck = await fetch('/api/v1/owner/requests/new');
-          const role = ownerCheck.ok ? 'owner' : 'worker';
-          setUser({ id: me.id, name: me.name, role });
+          setUser({ id: me.id, name: me.name, role: me.role });
         }
       } catch { }
       setLoading(false);

@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [requests, setRequests] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -19,13 +20,16 @@ export default function Dashboard() {
         ]);
         setRequests(reqData);
         setOrders(ordData);
-      } catch { }
+      } catch (err) {
+        setError('Не удалось загрузить данные');
+      }
       setLoading(false);
     };
     load();
   }, []);
 
   if (loading) return <Skeleton count={4} />;
+  if (error) return <div className={styles.status}>{error}</div>;
 
   const newRequests = requests.slice(0, 5);
   const upcomingOrders = orders.slice(0, 5);
@@ -52,7 +56,6 @@ export default function Dashboard() {
       </div>
 
       <div className={styles.columns}>
-        {/* Заявки */}
         <div className={styles.column}>
           <div className={styles.columnHeader}>
             <h2>Новые заявки</h2>
@@ -73,7 +76,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Заказы */}
         <div className={styles.column}>
           <div className={styles.columnHeader}>
             <h2>Ближайшие заказы</h2>

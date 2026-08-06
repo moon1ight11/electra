@@ -8,13 +8,16 @@ import Skeleton from '../../components/Skeleton/Skeleton';
 export default function PlannedOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const load = async () => {
       try {
         const data = await fetchAllPlannedOrders();
         setOrders(data.sort((a, b) => new Date(a.planned_date) - new Date(b.planned_date)));
-      } catch { } finally {
+      } catch (err) {
+        setError('Не удалось загрузить заказы');
+      } finally {
         setLoading(false);
       }
     };
@@ -22,6 +25,7 @@ export default function PlannedOrders() {
   }, []);
 
   if (loading) return <Skeleton count={4} />;
+  if (error) return <div className={styles.status}>{error}</div>;
 
   return (
     <div className={styles.page}>
