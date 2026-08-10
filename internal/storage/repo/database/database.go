@@ -30,11 +30,11 @@ func (d *DataBase) UpMigrations() error {
 
 func PostgresConnection(cfg config.Config) (*DataBase, error) {
 	connStr := fmt.Sprintf(
-		"postgresql://%s:%s@%s:%d/%s?sslmode=require",
-		cfg.DataBase.User,
-		cfg.DataBase.Password,
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=require sslsni=1",
 		cfg.DataBase.Host,
 		cfg.DataBase.Port,
+		cfg.DataBase.User,
+		cfg.DataBase.Password,
 		cfg.DataBase.DBName,
 	)
 
