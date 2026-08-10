@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 )
 
@@ -30,15 +30,15 @@ func (d *DataBase) UpMigrations() error {
 
 func PostgresConnection(cfg config.Config) (*DataBase, error) {
 	connStr := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=require sslsni=1",
-		cfg.DataBase.Host,
-		cfg.DataBase.Port,
+		"postgresql://%s:%s@%s:%d/%s?sslmode=require",
 		cfg.DataBase.User,
 		cfg.DataBase.Password,
+		cfg.DataBase.Host,
+		cfg.DataBase.Port,
 		cfg.DataBase.DBName,
 	)
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
