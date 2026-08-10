@@ -24,11 +24,23 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed to decode config: %w", err)
 	}
 
-	if envSecret := os.Getenv("JWT_SECRET"); envSecret != "" {
-		cfg.JWT.Secret = envSecret
+	if env := os.Getenv("JWT_SECRET"); env != "" {
+		cfg.JWT.Secret = env
 	}
-	if envDBPassword := os.Getenv("DB_PASSWORD"); envDBPassword != "" {
-		cfg.DataBase.Password = envDBPassword
+	if env := os.Getenv("DB_HOST"); env != "" {
+		cfg.DataBase.Host = env
+	}
+	if env := os.Getenv("DB_PORT"); env != "" {
+		fmt.Sscanf(env, "%d", &cfg.DataBase.Port)
+	}
+	if env := os.Getenv("DB_USER"); env != "" {
+		cfg.DataBase.User = env
+	}
+	if env := os.Getenv("DB_PASSWORD"); env != "" {
+		cfg.DataBase.Password = env
+	}
+	if env := os.Getenv("DB_NAME"); env != "" {
+		cfg.DataBase.DBName = env
 	}
 
 	return &cfg, nil
