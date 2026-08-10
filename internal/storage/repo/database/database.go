@@ -30,7 +30,7 @@ func (d *DataBase) UpMigrations() error {
 
 func PostgresConnection(cfg config.Config) (*DataBase, error) {
 	connStr := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=require connect_timeout=10",
 		cfg.DataBase.Host,
 		cfg.DataBase.Port,
 		cfg.DataBase.User,
@@ -48,7 +48,7 @@ func PostgresConnection(cfg config.Config) (*DataBase, error) {
 	db.SetConnMaxLifetime(cfg.DataBase.ConnMaxLifetime)
 	db.SetConnMaxIdleTime(cfg.DataBase.ConnMaxIdleTime)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := db.PingContext(ctx); err != nil {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
