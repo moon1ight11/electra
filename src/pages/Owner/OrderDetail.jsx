@@ -36,7 +36,6 @@ export default function OrderDetail() {
 
   const loadWorkerNames = useCallback(async () => {
     try {
-      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
       const res = await fetch('${BASE}worker/workers', { credentials: 'include' });
       if (res.ok) {
         const workers = await res.json();
