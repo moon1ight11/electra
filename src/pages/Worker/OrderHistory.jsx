@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import styles from './OrderHistory.module.css';
 import Skeleton from '../../components/Skeleton/Skeleton';
 
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+
 export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,8 +16,7 @@ export default function OrderHistory() {
 
   const loadHistory = async () => {
     try {
-      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
-      const res = await fetch('${BASE}/public/requests`, {/worker/orders/history', { credentials: 'include' });
+      const res = await fetch(`${BASE}/worker/orders/history`, { credentials: 'include' });
       if (!res.ok) throw new Error('Ошибка загрузки');
       const data = await res.json();
       setOrders(data);

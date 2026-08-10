@@ -3,6 +3,7 @@ import { fetchNewRequests, fetchAllRequests, cancelRequest, convertRequest } fro
 import styles from './Requests.module.css';
 import Skeleton from '../../components/Skeleton/Skeleton';
 
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
 
 export default function Requests() {
   const [tab, setTab] = useState('new');
@@ -27,8 +28,7 @@ export default function Requests() {
       const [reqData] = await Promise.all([fetcher()]);
       setRequests(reqData);
 
-      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
-      const res = await fetch('${BASE}worker/workers', { credentials: 'include' });
+      const res = await fetch(`${BASE}/worker/workers`, { credentials: 'include' });
       if (res.ok) {
         const workers = await res.json();
         setWorkers(workers);

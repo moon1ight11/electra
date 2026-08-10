@@ -6,8 +6,6 @@ import { fetchReports, updateReport } from '../../api/reports';
 import styles from './OrderDetail.module.css';
 import Skeleton from '../../components/Skeleton/Skeleton';
 
-const BASE = process.env.REACT_APP_API_URL || '/api/v1';
-
 export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -34,9 +32,11 @@ export default function OrderDetail() {
   const [editPlannedDate, setEditPlannedDate] = useState('');
   const [editSaving, setEditSaving] = useState(false);
 
+  const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+
   const loadWorkerNames = useCallback(async () => {
     try {
-      const res = await fetch('${BASE}worker/workers', { credentials: 'include' });
+      const res = await fetch(`${BASE}/worker/workers`, { credentials: 'include' });
       if (res.ok) {
         const workers = await res.json();
         const names = {};
@@ -46,7 +46,7 @@ export default function OrderDetail() {
         setWorkerNames(names);
       }
     } catch { }
-  }, []);
+  }, [BASE]);
 
   const loadOrder = useCallback(async () => {
     try {
@@ -62,7 +62,7 @@ export default function OrderDetail() {
     } catch (err) {
       setError(err.message);
     }
-  }, [id]);
+  }, [id, BASE]);
 
   const loadReports = useCallback(async () => {
     try {
@@ -244,11 +244,7 @@ export default function OrderDetail() {
               <div className={styles.reportHead}>
                 <span className={styles.workerName}>{workerNames[r.worker_id] || 'Неизвестный'}</span>
                 {!isCompleted && (
-                  <button
-                    className={styles.removeBtn}
-                    onClick={() => handleRemoveWorker(r.worker_id)}
-                    disabled={removing}
-                  >
+                  <button className={styles.removeBtn} onClick={() => handleRemoveWorker(r.worker_id)} disabled={removing}>
                     Снять
                   </button>
                 )}
@@ -308,11 +304,7 @@ export default function OrderDetail() {
       )}
 
       {!isCompleted && (
-        <button
-          className={styles.completeBtn}
-          onClick={handleComplete}
-          disabled={completing}
-        >
+        <button className={styles.completeBtn} onClick={handleComplete} disabled={completing}>
           {completing ? 'Завершение...' : 'Завершить заказ'}
         </button>
       )}
