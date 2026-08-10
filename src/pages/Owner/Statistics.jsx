@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import styles from './Statistics.module.css';
 import Skeleton from '../../components/Skeleton/Skeleton';
 
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+
 export default function Statistics() {
   const [stats, setStats] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -23,8 +25,8 @@ export default function Statistics() {
       if (toDate) params.set('to', toDate);
 
       const [statsRes, summaryRes] = await Promise.all([
-        fetch(`/api/v1/owner/statistics/all?${params}`, { credentials: 'include' }),
-        fetch(`/api/v1/owner/statistics/summary?${params}`, { credentials: 'include' }),
+        fetch(`${BASE}/owner/statistics/all?${params}`, { credentials: 'include' }),
+        fetch(`${BASE}/owner/statistics/summary?${params}`, { credentials: 'include' }),
       ]);
 
       if (!statsRes.ok || !summaryRes.ok) throw new Error('Ошибка загрузки');
