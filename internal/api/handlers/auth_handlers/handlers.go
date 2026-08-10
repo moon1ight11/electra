@@ -22,7 +22,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("cookie", token, 3600, "/", "", false, true)
+	c.SetSameSite(http.SameSiteNoneMode)
+	c.SetCookie("cookie", token, 3600, "/", "", true, true)
 
 	h.logger.Info("user logged in", "user_phone", req.Phone)
 
