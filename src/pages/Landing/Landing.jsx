@@ -69,7 +69,8 @@ export default function Landing() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('/api/v1/public/requests', {
+      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+      const res = await fetch(`${BASE}/public/requests`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, phone: phone.value, comment }),

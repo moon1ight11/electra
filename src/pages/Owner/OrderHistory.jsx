@@ -11,7 +11,8 @@ export default function OrderHistory() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch('/api/v1/owner/orders/history', { credentials: 'include' });
+        const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+        const res = await fetch('${BASE}owner/orders/history', { credentials: 'include' });
         if (!res.ok) throw new Error('Ошибка загрузки');
         const data = await res.json();
         setOrders(data);

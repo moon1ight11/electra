@@ -1,4 +1,4 @@
-const BASE = '/api/v1';
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
 
 export async function fetchAllStats(from = '', to = '') {
   const params = new URLSearchParams();

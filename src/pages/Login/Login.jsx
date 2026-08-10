@@ -5,6 +5,8 @@ import { loginRequest } from '../../api/auth';
 import { usePhoneMask } from '../../hooks/usePhoneMask';
 import styles from './Login.module.css';
 
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+
 export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +19,7 @@ export default function Login() {
     setError('');
     try {
       await loginRequest(phone.value, password);
-      const meRes = await fetch('/api/v1/worker/me', { credentials: 'include' });
+      const meRes = await fetch(`${BASE}/worker/me`, { credentials: 'include' });
       const me = await meRes.json();
       login(me.id, me.name, me.role);
       navigate(me.role === 'owner' ? '/owner/dashboard' : '/dashboard');
@@ -34,22 +36,11 @@ export default function Login() {
         {error && <p className={styles.error}>{error}</p>}
         <label>
           Телефон
-          <input
-            type="tel"
-            value={phone.value}
-            onChange={phone.onChange}
-            placeholder="+7 (___) ___-__-__"
-            required
-          />
+          <input type="tel" value={phone.value} onChange={phone.onChange} placeholder="+7 (___) ___-__-__" required />
         </label>
         <label>
           Пароль
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </label>
         <button type="submit">Войти</button>
       </form>

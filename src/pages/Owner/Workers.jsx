@@ -4,7 +4,7 @@ import { usePhoneMask } from '../../hooks/usePhoneMask';
 import Skeleton from '../../components/Skeleton/Skeleton';
 import styles from './Workers.module.css';
 
-const BASE = '/api/v1';
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
 
 export default function Workers() {
   const [workers, setWorkers] = useState([]);

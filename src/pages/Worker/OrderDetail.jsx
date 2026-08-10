@@ -25,7 +25,8 @@ export default function OrderDetail() {
 
   const loadWorkerNames = useCallback(async () => {
     try {
-      const res = await fetch('/api/v1/worker/workers', { credentials: 'include' });
+      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+      const res = await fetch('${BASE}worker/workers', { credentials: 'include' });
       if (res.ok) {
         const workers = await res.json();
         const names = {};
@@ -42,7 +43,8 @@ export default function OrderDetail() {
       const all = await fetchPlannedOrders();
       let found = all.find((o) => o.id === id);
       if (!found) {
-        const histRes = await fetch('/api/v1/worker/orders/history', { credentials: 'include' });
+        const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+        const histRes = await fetch('${BASE}worker/orders/history', { credentials: 'include' });
         const hist = await histRes.json();
         found = hist.find((o) => o.id === id);
         if (!found) throw new Error('Заказ не найден');

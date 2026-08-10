@@ -1,4 +1,4 @@
-const BASE = '/api/v1';
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
 
 export async function fetchNewRequests() {
   const res = await fetch(`${BASE}/owner/requests/new`, {

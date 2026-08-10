@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -9,7 +10,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const restoreSession = async () => {
       try {
-        const meRes = await fetch('/api/v1/worker/me', { credentials: 'include' });
+        const meRes = await fetch(`${BASE}/worker/me`, { credentials: 'include' });
         if (meRes.ok) {
           const me = await meRes.json();
           setUser({ id: me.id, name: me.name, role: me.role });
@@ -24,7 +25,7 @@ export function AuthProvider({ children }) {
   const login = (id, name, role) => setUser({ id, name, role });
 
   const logout = async () => {
-    await fetch('/api/v1/worker/logout', { method: 'POST', credentials: 'include' });
+    await fetch(`${BASE}/worker/logout`, { method: 'POST', credentials: 'include' });
     setUser(null);
   };
 

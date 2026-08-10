@@ -27,7 +27,8 @@ export default function Requests() {
       const [reqData] = await Promise.all([fetcher()]);
       setRequests(reqData);
 
-      const res = await fetch('/api/v1/worker/workers', { credentials: 'include' });
+      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+      const res = await fetch('${BASE}worker/workers', { credentials: 'include' });
       if (res.ok) {
         const workers = await res.json();
         setWorkers(workers);

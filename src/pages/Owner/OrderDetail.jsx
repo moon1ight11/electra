@@ -6,7 +6,7 @@ import { fetchReports, updateReport } from '../../api/reports';
 import styles from './OrderDetail.module.css';
 import Skeleton from '../../components/Skeleton/Skeleton';
 
-const BASE = '/api/v1';
+const BASE = process.env.REACT_APP_API_URL || '/api/v1';
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -36,7 +36,8 @@ export default function OrderDetail() {
 
   const loadWorkerNames = useCallback(async () => {
     try {
-      const res = await fetch('/api/v1/worker/workers', { credentials: 'include' });
+      const BASE = process.env.REACT_APP_API_URL || '/api/v1';
+      const res = await fetch('${BASE}worker/workers', { credentials: 'include' });
       if (res.ok) {
         const workers = await res.json();
         const names = {};
