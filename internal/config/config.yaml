@@ -1,0 +1,23 @@
+environment: "development"
+
+server:
+  port: "8080"
+  host: "0.0.0.0"
+  cors_origin: "http://localhost:3000"
+
+database:
+  host: "localhost"
+  port: 15432
+  db_name: "electra"
+  user: "user"
+  password: ""
+  migrations_dir: "./internal/storage/repo/migrations"
+
+jwt:
+  secret: ""
+  expiration: "24h"
+
+logger:
+  level: "debug"
+  filepath: "logs/electra.log"
+  maxsize: 10
