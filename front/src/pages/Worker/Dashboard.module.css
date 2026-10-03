@@ -1,0 +1,134 @@
+.dashboard {
+  max-width: 700px;
+}
+
+.dashboard h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #6B6355;
+  font-size: 15px;
+  margin-bottom: 28px;
+}
+
+.status {
+  font-size: 16px;
+  color: #6B6355;
+  padding: 40px 0;
+}
+
+.empty {
+  background: #FCFAF6;
+  padding: 48px 24px;
+  border-radius: 18px;
+  text-align: center;
+  color: #8B8270;
+  border: 1px dashed #DDD6C8;
+  font-size: 15px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: #FCFAF6;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+  box-shadow:
+    0 2px 8px rgba(44, 36, 22, 0.03),
+    0 4px 16px rgba(44, 36, 22, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  display: block;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 16px rgba(44, 36, 22, 0.05),
+    0 8px 24px rgba(44, 36, 22, 0.03);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.address {
+  font-size: 17px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.date {
+  font-size: 13px;
+  color: #8B8270;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-left: 16px;
+}
+
+.description {
+  font-size: 14px;
+  color: #6B6355;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #B87333;
+}
+
+.allLink {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #3D4A3E;
+  padding: 10px 20px;
+  background: #F0ECE0;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.allLink:hover {
+  background: #E5DFCF;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.reportDone,
+.reportPending {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.reportDone {
+  background: #E8F0E4;
+  color: #3D4A3E;
+}
+
+.reportPending {
+  background: #FFF5E8;
+  color: #B87333;
+}

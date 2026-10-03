@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Nunito', -apple-system, sans-serif;
+  background-color: #F6F4EC;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' fill='%23F6F4EC'/%3E%3Cpath d='M10 10 L10 60 L40 60 L40 30 L70 30 L70 80 L100 80 L100 110' fill='none' stroke='%233D4A3E' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M60 10 L60 40 L30 40 L30 90 L80 90 L80 50 L110 50 L110 10' fill='none' stroke='%233D4A3E' stroke-width='1' opacity='0.06'/%3E%3Ccircle cx='10' cy='10' r='2.5' fill='%233D4A3E' opacity='0.08'/%3E%3Ccircle cx='70' cy='30' r='2' fill='%233D4A3E' opacity='0.06'/%3E%3Ccircle cx='100' cy='110' r='2.5' fill='%233D4A3E' opacity='0.08'/%3E%3Ccircle cx='60' cy='10' r='2' fill='%233D4A3E' opacity='0.06'/%3E%3Ccircle cx='30' cy='40' r='2' fill='%23D4A030' opacity='0.06'/%3E%3Ccircle cx='80' cy='90' r='2' fill='%23D4A030' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  background-repeat: repeat;
+  color: #2C2416;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+input,
+button,
+textarea,
+select {
+  font-family: 'Nunito', sans-serif;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #3D4A3E;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+button,
+a,
+.card,
+input,
+textarea,
+select {
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+.card:hover,
+a.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(44, 36, 22, 0.06);
+}

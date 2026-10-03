@@ -1,0 +1,278 @@
+.page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 20px;
+}
+
+.status {
+  font-size: 16px;
+  color: #6B6355;
+  padding: 40px 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tab,
+.tabActive {
+  padding: 8px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  transition: background 0.2s ease;
+}
+
+.tab {
+  background: #F0ECE0;
+  color: #6B6355;
+}
+
+.tab:hover {
+  background: #E5DFCF;
+}
+
+.tabActive {
+  background: #3D4A3E;
+  color: #FCFAF6;
+}
+
+.success {
+  color: #3D4A3E;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: #B84530;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.empty {
+  background: #FCFAF6;
+  padding: 48px 24px;
+  border-radius: 18px;
+  text-align: center;
+  color: #8B8270;
+  border: 1px dashed #DDD6C8;
+  font-size: 15px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: #FCFAF6;
+  padding: 18px 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+  box-shadow: 0 2px 8px rgba(44, 36, 22, 0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cardBody {
+  flex: 1;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.phone {
+  font-size: 14px;
+  color: #8B8270;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  background: #F0ECE0;
+  color: #6B6355;
+}
+
+.comment {
+  font-size: 14px;
+  color: #6B6355;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.date {
+  font-size: 12px;
+  color: #B8AA90;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.convertBtn,
+.cancelBtn {
+  padding: 8px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.convertBtn {
+  background: linear-gradient(135deg, #D4A030 0%, #B87333 100%);
+  color: #FCFAF6;
+}
+
+.convertBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(184, 115, 51, 0.2);
+}
+
+.cancelBtn {
+  background: #F0ECE0;
+  color: #6B6355;
+}
+
+.cancelBtn:hover {
+  background: #E5DFCF;
+}
+
+/* Модалка */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.form {
+  background: #FCFAF6;
+  padding: 32px 28px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 40px rgba(44, 36, 22, 0.12);
+}
+
+.form h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 4px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5C5545;
+}
+
+.form input {
+  padding: 12px 16px;
+  border: 1.5px solid #DDD6C8;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #FFFDF9;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.form input:focus {
+  border-color: #D4A030;
+  box-shadow: 0 0 0 3px rgba(212, 160, 48, 0.1);
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.workerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workerLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5C5545;
+}
+
+.noWorkers {
+  font-size: 13px;
+  color: #8B8270;
+}
+
+.workerList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.workerItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #3D4A3E;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.workerItem:hover {
+  background: #F5EDDC;
+}
+
+.workerItem input[type="checkbox"] {
+  accent-color: #D4A030;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

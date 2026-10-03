@@ -1,0 +1,85 @@
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.back {
+  background: none;
+  border: none;
+  color: #6B6355;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.back:hover {
+  color: #3D4A3E;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #6B6355;
+}
+
+.form input {
+  padding: 10px 14px;
+  border: 1px solid #D4C9B5;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #FAF8F5;
+  color: #3D4A3E;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form input:focus {
+  border-color: #3D4A3E;
+}
+
+.saveBtn {
+  padding: 12px 24px;
+  background: #3D4A3E;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+
+.saveBtn:hover {
+  background: #2C3A2D;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.success {
+  color: #3D4A3E;
+  font-size: 14px;
+  padding: 8px 12px;
+  background: #E8F0E8;
+  border-radius: 8px;
+}
+
+.error {
+  color: #C44;
+  font-size: 14px;
+  padding: 8px 12px;
+  background: #FDE8E8;
+  border-radius: 8px;
+}

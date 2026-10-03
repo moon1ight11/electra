@@ -1,0 +1,322 @@
+.page {
+  max-width: 700px;
+}
+
+.status {
+  font-size: 16px;
+  color: #6B6355;
+  padding: 40px 0;
+}
+
+.back {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B6355;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+  font-family: 'Nunito', sans-serif;
+}
+
+.back:hover {
+  color: #3D4A3E;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.badge {
+  background: #F0ECE0;
+  color: #6B6355;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+.infoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #FCFAF6;
+  padding: 20px 24px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(184, 115, 51, 0.06);
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+.label {
+  color: #8B8270;
+  font-weight: 500;
+}
+
+.price {
+  font-weight: 700;
+  color: #B87333;
+}
+
+.editBtn {
+  padding: 10px 22px;
+  background: #F0ECE0;
+  color: #3D4A3E;
+  border: 1px solid #DDD6C8;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  margin-bottom: 24px;
+  transition: all 0.2s ease;
+}
+
+.editBtn:hover {
+  background: #E5DFCF;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 16px;
+}
+
+.empty {
+  color: #8B8270;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.reports {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.reportCard {
+  background: #FCFAF6;
+  padding: 16px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(184, 115, 51, 0.04);
+}
+
+.reportHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.workerName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #3D4A3E;
+}
+
+.removeBtn {
+  padding: 4px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: #FDF0EA;
+  color: #B84530;
+  font-family: 'Nunito', sans-serif;
+  transition: background 0.2s ease;
+}
+
+.removeBtn:hover {
+  background: #FCE4DB;
+}
+
+.reportRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.reportLabel {
+  color: #8B8270;
+}
+
+.success {
+  color: #3D4A3E;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.error {
+  color: #B84530;
+  font-weight: 600;
+  font-size: 14px;
+  margin: 16px 0;
+}
+
+.reportForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.reportForm label,
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5C5545;
+}
+
+.reportForm input,
+.reportForm textarea,
+.form input,
+.form textarea {
+  padding: 12px 16px;
+  border: 1.5px solid #DDD6C8;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #FFFDF9;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+}
+
+.reportForm input:focus,
+.reportForm textarea:focus,
+.form input:focus,
+.form textarea:focus {
+  border-color: #D4A030;
+  box-shadow: 0 0 0 3px rgba(212, 160, 48, 0.1);
+}
+
+.saveBtn {
+  padding: 12px 24px;
+  background: #3D4A3E;
+  color: #FCFAF6;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.saveBtn:hover {
+  transform: translateY(-1px);
+}
+
+.saveBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.completeBtn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #D4A030 0%, #B87333 100%);
+  color: #FCFAF6;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.completeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(184, 115, 51, 0.25);
+}
+
+.completeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.form {
+  background: #FCFAF6;
+  padding: 32px 28px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 40px rgba(44, 36, 22, 0.12);
+}
+
+.form h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3D4A3E;
+  margin-bottom: 4px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.cancelBtn {
+  padding: 12px 24px;
+  background: #F0ECE0;
+  color: #6B6355;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 0;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
